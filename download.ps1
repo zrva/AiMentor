@@ -101,7 +101,7 @@ if (Test-Path $VenvPy) {
 
 Write-Host "==> Installing Python dependencies (Streamlit, Requests) ..." -ForegroundColor Cyan
 & "$VenvPy" -m pip install --upgrade pip -q
-& "$VenvPy" -m pip install streamlit requests huggingface-hub -q
+& "$VenvPy" -m pip install streamlit requests -q
 Write-Host "[OK] Python dependencies installed." -ForegroundColor Green
 
 # ── 3. Ask user: GPU or CPU ──
@@ -144,7 +144,12 @@ if ($UserModelOverride) {
     $BonsaiModel = "8B"
     Write-Host "[INFO] GPU mode -> downloading full Bonsai-8B model" -ForegroundColor Green
 }
-$HfGgufRepo = "prism-ml/Bonsai-${BonsaiModel}-gguf"
+
+# Direct download URLs (no auth required)
+$ModelUrls = @{
+    "8B" = "https://huggingface.co/prism-ml/Bonsai-8B-gguf/resolve/main/Bonsai-8B.gguf"
+    "4B" = "https://huggingface.co/prism-ml/Bonsai-4B-gguf/resolve/main/Bonsai-4B.gguf"
+}
 
 # ── 4. Download llama-server binaries ──
 Write-Host "==> [4/6] Downloading llama-server binaries ..." -ForegroundColor Cyan
@@ -202,28 +207,26 @@ if ($GpuType -eq "hip") {
 Set-Content -Path (Join-Path $PSScriptRoot ".gpu_type") -Value $GpuType
 
 # ── 5. Download GGUF model ──
-Write-Host "==> [5/6] Downloading Bonsai-$BonsaiModel model from HuggingFace ..." -ForegroundColor Cyan
+Write-Host "==> [5/6] Downloading Bonsai-$BonsaiModel model ..." -ForegroundColor Cyan
 
 $ModelDir = Join-Path $PSScriptRoot "models\gguf\$BonsaiModel"
-$ExistingGguf = Get-ChildItem -Path $ModelDir -Filter "*.gguf" -ErrorAction SilentlyContinue | Select-Object -First 1
+$ModelFile = "Bonsai-${BonsaiModel}.gguf"
+$ModelPath = Join-Path $ModelDir $ModelFile
 
-if ($ExistingGguf) {
-    Write-Host "[OK] Model already present: $($ExistingGguf.Name)" -ForegroundColor Green
+if (Test-Path $ModelPath) {
+    Write-Host "[OK] Model already present: $ModelFile" -ForegroundColor Green
 } else {
-    $HfCli = Join-Path $VenvDir "Scripts\huggingface-cli.exe"
-    if (-not (Test-Path $HfCli)) {
-        Write-Host "[ERR] huggingface-cli not found. Reinstall with: pip install huggingface-hub" -ForegroundColor Red
-        exit 1
-    }
     New-Item -ItemType Directory -Path $ModelDir -Force | Out-Null
-    Write-Host "    This may take a few minutes depending on your internet speed ..." -ForegroundColor Yellow
-    & $HfCli download $HfGgufRepo --local-dir $ModelDir
-    $DownloadedGguf = Get-ChildItem -Path $ModelDir -Filter "*.gguf" -ErrorAction SilentlyContinue | Select-Object -First 1
-    if (-not $DownloadedGguf) {
-        Write-Host "[ERR] Model download failed. Try manually: huggingface-cli download $HfGgufRepo --local-dir $ModelDir" -ForegroundColor Red
+    $ModelUrl = $ModelUrls[$BonsaiModel]
+    Write-Host "    Downloading from HuggingFace ..." -ForegroundColor Yellow
+    Write-Host "    URL: $ModelUrl" -ForegroundColor Cyan
+    try {
+        Invoke-WebRequest -Uri $ModelUrl -OutFile $ModelPath -UseBasicParsing
+        Write-Host "[OK] Model downloaded: $ModelFile" -ForegroundColor Green
+    } catch {
+        Write-Host "[ERR] Model download failed: $_" -ForegroundColor Red
         exit 1
     }
-    Write-Host "[OK] Model downloaded: $($DownloadedGguf.Name)" -ForegroundColor Green
 }
 
 # Save model size for start.bat
