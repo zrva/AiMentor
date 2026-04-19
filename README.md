@@ -1,45 +1,51 @@
 # AiMentor
 
-A fully offline AI teaching assistant. One-command setup — no pre-installed tools required.
+A fully offline AI teaching assistant for Windows.
 
 ## Quick Start (Windows)
 
-1. Clone or download the repo
-2. **Double-click `setup.bat`** — this downloads everything automatically (Python deps, AI model, server binary)
-3. **Double-click `start.bat`** — launches AiMentor
+1. Clone or download the repo.
+2. Run `setup.bat`.
+3. Run `start.bat`.
 
-That's it. Setup auto-detects your hardware (NVIDIA/AMD/CPU), downloads the correct `llama-server` binary, downloads the Bonsai model from HuggingFace, and installs Python + Streamlit.
+That installs Python dependencies, downloads the selected `llama-server` build, downloads the Bonsai model, and launches the app locally.
 
-> **Alternative (PowerShell):** If you prefer running setup manually:
-> ```powershell
-> Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-> .\download.ps1
-> ```
+If you prefer PowerShell directly:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\download.ps1
+```
 
 ## What `download.ps1` Does
 
 | Step | What happens |
 |------|-------------|
 | 1 | Finds Python 3.11+ or installs it via `winget` |
-| 2 | Creates a virtual environment, installs Streamlit + Requests |
-| 3 | Auto-detects GPU: NVIDIA CUDA, AMD HIP/ROCm, Vulkan, or CPU |
-| 4 | Downloads the correct pre-built `llama-server.exe` from [PrismML releases](https://github.com/PrismML-Eng/llama.cpp/releases) |
+| 2 | Creates a virtual environment and installs dependencies from `requirements.txt` |
+| 3 | Asks whether to use NVIDIA, AMD, or CPU mode |
+| 4 | Downloads the matching `llama-server.exe` build from [PrismML releases](https://github.com/PrismML-Eng/llama.cpp/releases) |
 | 5 | Downloads the Bonsai GGUF model from HuggingFace |
 
 ### Choosing a Model Size
 
-By default, setup downloads the **8B** model. To use a smaller model (faster, less RAM):
+Setup chooses a default model automatically:
+
+- GPU mode: `8B`
+- CPU mode: `4B`
+
+You can override it manually before running setup:
 
 ```powershell
-$env:BONSAI_MODEL = "4B"    # Options: 8B (default), 4B, 1.7B
+$env:BONSAI_MODEL = "4B"    # Supported: 8B, 4B
 .\download.ps1
 ```
 
 ## Features
 
 - **Dual Mode**: Structured course generation with syllabus + sections, or free-form chat
-- **Fully Offline**: Everything runs locally — no API keys, no cloud, no internet needed after setup
-- **Auto Hardware Detection**: Automatically uses GPU acceleration if available, falls back to CPU
+- **Fully Offline**: Everything runs locally after setup completes
+- **Windows Setup Flow**: One setup script handles Python env, server binary, and model download
 - **Checkpoint System**: Save and resume learning progress across sessions
 - **Opinionated Mentor**: The AI has genuine opinions and a distinct teaching style
 
@@ -60,11 +66,12 @@ $env:BONSAI_MODEL = "4B"    # Options: 8B (default), 4B, 1.7B
 
 ```
 AiMentor/
-├── download.ps1         ← Downloads model + AI server (run this first)
-├── start.bat          ← Smart launcher (run this to use)
+├── setup.bat          ← Windows setup entry point
+├── download.ps1       ← Downloads model + AI server
+├── start.bat          ← Launcher
 ├── app.py             ← Main application
 ├── requirements.txt   ← Python dependencies
-├── bin/               ← Downloaded llama-server binaries (created by setup)
-├── models/            ← Downloaded GGUF models (created by setup)
+├── bin/               ← Downloaded llama-server binaries
+├── models/            ← Downloaded GGUF models
 └── llm_workspace/     ← Saved checkpoints and progress
 ```

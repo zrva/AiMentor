@@ -92,6 +92,32 @@ os.makedirs(WORKSPACE, exist_ok=True)
 SERVER_PORT = 8080
 _env_base = os.environ.get("LLM_API_BASE", "")
 SERVER_URL = _env_base.rstrip("/") if _env_base else f"http://localhost:{SERVER_PORT}"
+GPU_TYPE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".gpu_type")
+
+
+def get_runtime_profile():
+    gpu_type = "cpu"
+    try:
+        if os.path.exists(GPU_TYPE_FILE):
+            with open(GPU_TYPE_FILE, "r", encoding="utf-8") as f:
+                gpu_type = f.read().strip().lower() or "cpu"
+    except Exception:
+        gpu_type = "cpu"
+
+    if gpu_type == "cpu":
+        return {
+            "gpu_type": gpu_type,
+            "max_tokens": 384,
+            "temperature": 0.8,
+            "top_p": 0.75,
+        }
+
+    return {
+        "gpu_type": gpu_type,
+        "max_tokens": 6500,
+        "temperature": 0.95,
+        "top_p": 0.75,
+    }
 
 
 @st.cache_data(ttl=10, show_spinner=False)
@@ -611,6 +637,7 @@ def main():
         st.session_state["_model_check_time"] = now
     else:
         active_model = st.session_state["_cached_model_name"]
+    runtime_profile = get_runtime_profile()
 
     st.title("🤖 AiMentor")
     st.caption(
@@ -631,10 +658,13 @@ def main():
             "Application Mode", ["📚 Structured Course", "💬 Free Chat"]
         )
 
-        # Fixed reasoning boundaries for stability
-        max_tokens = 6500
-        temperature = 0.95
-        top_p = 0.75
+        # Fixed reasoning boundaries tuned to the selected runtime profile
+        max_tokens = runtime_profile["max_tokens"]
+        temperature = runtime_profile["temperature"]
+        top_p = runtime_profile["top_p"]
+
+        if runtime_profile["gpu_type"] == "cpu":
+            st.caption("CPU mode: reduced output budget for lower memory use and faster replies.")
 
         if st.button("🏠 Home / Clear Chat", use_container_width=True):
             reset_to_home()

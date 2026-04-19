@@ -5,5 +5,11 @@ echo ==============================================
 echo.
 echo Starting setup in PowerShell...
 echo.
-powershell -ExecutionPolicy Bypass -File "%~dp0download.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0download.ps1"
+if errorlevel 1 (
+    echo.
+    echo [ERR] Setup failed.
+    pause
+    exit /b 1
+)
 pause

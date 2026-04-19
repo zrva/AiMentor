@@ -1,6 +1,6 @@
 # AiMentor - One-Command Setup for Windows (PowerShell)
-# Usage:  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\setup.ps1
-# Optional:  $env:BONSAI_MODEL = "4B"   (default: 8B)
+# Usage:  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\download.ps1
+# Optional:  $env:BONSAI_MODEL = "4B"   (default: auto-select 8B for GPU, 4B for CPU)
 $ErrorActionPreference = "Stop"
 
 # Model will be auto-selected based on GPU detection unless user overrides
@@ -10,6 +10,7 @@ $WinAssetTag = "prism-b1-e2d6742"
 $BaseUrl = "https://github.com/PrismML-Eng/llama.cpp/releases/download/$ReleaseTag"
 $VenvDir = Join-Path $PSScriptRoot "venv"
 $VenvPy = Join-Path $VenvDir "Scripts\python.exe"
+$RequirementsFile = Join-Path $PSScriptRoot "requirements.txt"
 
 # ── Helpers ──
 
@@ -99,9 +100,13 @@ if (Test-Path $VenvPy) {
     Write-Host "[OK] Created virtual environment." -ForegroundColor Green
 }
 
-Write-Host "==> Installing Python dependencies (Streamlit, Requests) ..." -ForegroundColor Cyan
+Write-Host "==> Installing Python dependencies ..." -ForegroundColor Cyan
 & "$VenvPy" -m pip install --upgrade pip -q
-& "$VenvPy" -m pip install streamlit requests -q
+if (Test-Path $RequirementsFile) {
+    & "$VenvPy" -m pip install -r $RequirementsFile -q
+} else {
+    & "$VenvPy" -m pip install streamlit requests -q
+}
 Write-Host "[OK] Python dependencies installed." -ForegroundColor Green
 
 # ── 3. Ask user: GPU or CPU ──
@@ -149,6 +154,11 @@ if ($UserModelOverride) {
 $ModelUrls = @{
     "8B" = "https://huggingface.co/prism-ml/Bonsai-8B-gguf/resolve/main/Bonsai-8B.gguf"
     "4B" = "https://huggingface.co/prism-ml/Bonsai-4B-gguf/resolve/main/Bonsai-4B.gguf"
+}
+
+if (-not $ModelUrls.ContainsKey($BonsaiModel)) {
+    Write-Host "[ERR] Unsupported BONSAI_MODEL '$BonsaiModel'. Supported values: 8B, 4B" -ForegroundColor Red
+    exit 1
 }
 
 # ── 4. Download llama-server binaries ──
