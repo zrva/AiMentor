@@ -1,0 +1,21 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.ruff_cache/
+
+# Setup artifacts (downloaded by setup.ps1)
+bin/
+models/
+.gpu_type
+.model_size
+
+# Workspace data
+llm_workspace/
+
+# Bonsai demo (duplicate, use root setup.ps1 instead)
+bonsaiiii/
+
+# OS
+Thumbs.db
+.DS_Store
