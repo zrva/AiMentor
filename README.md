@@ -4,20 +4,17 @@ A fully offline AI teaching assistant. One-command setup — no pre-installed to
 
 ## Quick Start (Windows)
 
-```powershell
-# 1. Clone the repo
-git clone https://github.com/zrva/AiMentor.git
-cd AiMentor
-
-# 2. Run setup (downloads everything automatically)
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\setup.ps1
-
-# 3. Launch
-.\start.bat
-```
+1. Clone or download the repo
+2. **Double-click `setup.bat`** — this downloads everything automatically (Python deps, AI model, server binary)
+3. **Double-click `start.bat`** — launches AiMentor
 
 That's it. Setup auto-detects your hardware (NVIDIA/AMD/CPU), downloads the correct `llama-server` binary, downloads the Bonsai model from HuggingFace, and installs Python + Streamlit.
+
+> **Alternative (PowerShell):** If you prefer running setup manually:
+> ```powershell
+> Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+> .\setup.ps1
+> ```
 
 ## What `setup.ps1` Does
 

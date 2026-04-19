@@ -100,8 +100,14 @@ if (Test-Path $VenvPy) {
 }
 
 Write-Host "==> Installing Python dependencies (Streamlit, Requests) ..." -ForegroundColor Cyan
-& (Join-Path $VenvDir "Scripts\pip.exe") install --upgrade pip -q
-& (Join-Path $VenvDir "Scripts\pip.exe") install streamlit requests huggingface-hub -q
+$PipExe = Join-Path $VenvDir "Scripts\pip.exe"
+if (-not (Test-Path $PipExe)) {
+    Write-Host "[ERR] pip.exe not found at: $PipExe" -ForegroundColor Red
+    Write-Host "      Try deleting the 'venv' folder and re-running setup." -ForegroundColor Yellow
+    exit 1
+}
+& "$PipExe" install --upgrade pip -q
+& "$PipExe" install streamlit requests huggingface-hub -q
 Write-Host "[OK] Python dependencies installed." -ForegroundColor Green
 
 # ── 3. Detect GPU ──
