@@ -50,7 +50,13 @@ $env:BONSAI_MODEL = "4B"    # Options: 8B (default), 4B, 1.7B
 
 - **Windows 10/11** (macOS/Linux support coming later)
 - **Internet** for first-time setup only (downloads ~2-5 GB depending on model)
-- **RAM**: ~2.5GB for 8K context, ~6GB for 32K context, ~10.5GB for 65K context
+
+| Context Size | Est. Memory Usage |
+|-------------|-----------------|
+| 8,192 tokens | ~2.5 GB |
+| 32,768 tokens | ~5.9 GB |
+| 65,536 tokens | ~10.5 GB |
+
 - **GPU** (optional): NVIDIA (CUDA), AMD (ROCm/HIP), or Vulkan — CPU works too, just slower
 
 ## File Structure
