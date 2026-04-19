@@ -50,7 +50,7 @@ $env:BONSAI_MODEL = "4B"    # Options: 8B (default), 4B, 1.7B
 
 - **Windows 10/11** (macOS/Linux support coming later)
 - **Internet** for first-time setup only (downloads ~2-5 GB depending on model)
-- **RAM**: 4GB+ for 4B model, 8GB+ for 8B model
+- **RAM**: ~2.5GB for 8K context, ~6GB for 32K context, ~10.5GB for 65K context
 - **GPU** (optional): NVIDIA (CUDA), AMD (ROCm/HIP), or Vulkan — CPU works too, just slower
 
 ## File Structure
