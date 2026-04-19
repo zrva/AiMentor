@@ -13,10 +13,10 @@ That's it. Setup auto-detects your hardware (NVIDIA/AMD/CPU), downloads the corr
 > **Alternative (PowerShell):** If you prefer running setup manually:
 > ```powershell
 > Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-> .\setup.ps1
+> .\download.ps1
 > ```
 
-## What `setup.ps1` Does
+## What `download.ps1` Does
 
 | Step | What happens |
 |------|-------------|
@@ -32,7 +32,7 @@ By default, setup downloads the **8B** model. To use a smaller model (faster, le
 
 ```powershell
 $env:BONSAI_MODEL = "4B"    # Options: 8B (default), 4B, 1.7B
-.\setup.ps1
+.\download.ps1
 ```
 
 ## Features
@@ -60,7 +60,7 @@ $env:BONSAI_MODEL = "4B"    # Options: 8B (default), 4B, 1.7B
 
 ```
 AiMentor/
-├── setup.ps1          ← One-command setup (run this first)
+├── download.ps1         ← Downloads model + AI server (run this first)
 ├── start.bat          ← Smart launcher (run this to use)
 ├── app.py             ← Main application
 ├── requirements.txt   ← Python dependencies
