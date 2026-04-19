@@ -6,7 +6,7 @@ A fully offline AI teaching assistant. One-command setup — no pre-installed to
 
 ```powershell
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/AiMentor.git
+git clone https://github.com/zrva/AiMentor.git
 cd AiMentor
 
 # 2. Run setup (downloads everything automatically)
