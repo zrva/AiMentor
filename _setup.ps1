@@ -104,61 +104,33 @@ Write-Host "==> Installing Python dependencies (Streamlit, Requests) ..." -Foreg
 & "$VenvPy" -m pip install streamlit requests huggingface-hub -q
 Write-Host "[OK] Python dependencies installed." -ForegroundColor Green
 
-# ── 3. Detect GPU ──
-Write-Host "==> [3/6] Detecting GPU ..." -ForegroundColor Cyan
-$GpuType = $null
+# ── 3. Ask user: GPU or CPU ──
+Write-Host "==> [3/6] Hardware Selection" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "  Do you have a dedicated GPU (NVIDIA or AMD) that you want to use?" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "    [1] YES - I have an NVIDIA GPU (CUDA)" -ForegroundColor Green
+Write-Host "    [2] YES - I have an AMD GPU (ROCm/HIP)" -ForegroundColor Green
+Write-Host "    [3] NO  - CPU only (or unsure)" -ForegroundColor Yellow
+Write-Host ""
+$choice = Read-Host "Enter your choice (1/2/3)"
+
+$GpuType = "cpu"
 $CudaTag = "12.4"
 
-foreach ($p in @(
-    (Get-Command nvidia-smi -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -ErrorAction SilentlyContinue),
-    "$env:ProgramFiles\NVIDIA Corporation\NVSMI\nvidia-smi.exe",
-    "$env:SystemRoot\System32\nvidia-smi.exe"
-)) {
-    if ($p -and (Test-Path $p)) {
-        try {
-            $out = & $p 2>&1 | Out-String
-            if ($out -match 'CUDA Version:\s+(\d+)\.(\d+)') {
-                $major = [int]$Matches[1]; $minor = [int]$Matches[2]
-                if ($major -gt 12 -or ($major -eq 12 -and $minor -ge 4)) {
-                    $CudaTag = "12.4"
-                    $GpuType = "cuda"
-                } else {
-                    Write-Host "[WARN] CUDA $major.$minor detected (older than 12.4). Falling back to CPU." -ForegroundColor Yellow
-                    $GpuType = "cpu"
-                }
-                break
-            }
-        } catch {}
+switch ($choice) {
+    "1" {
+        $GpuType = "cuda"
+        Write-Host "[OK] NVIDIA GPU (CUDA) selected" -ForegroundColor Green
     }
-}
-
-if (-not $GpuType) {
-    # Check AMD HIP
-    $HipPath = $null
-    if ($env:HIP_PATH -and (Test-Path $env:HIP_PATH)) { $HipPath = $env:HIP_PATH }
-    if (-not $HipPath) {
-        foreach ($candidate in @(
-            "$env:ProgramFiles\AMD\ROCm\*\bin\hipcc.exe",
-            "$env:ProgramFiles\AMD\ROCm\bin\hipcc.exe"
-        )) {
-            $found = Get-Item $candidate -ErrorAction SilentlyContinue | Select-Object -First 1
-            if ($found) { $HipPath = $found.DirectoryName; break }
-        }
-    }
-    if ($HipPath) {
+    "2" {
         $GpuType = "hip"
-    } elseif (Get-Command vulkaninfo -ErrorAction SilentlyContinue) {
-        $GpuType = "vulkan"
-    } else {
-        $GpuType = "cpu"
+        Write-Host "[OK] AMD GPU (HIP/ROCm) selected" -ForegroundColor Green
     }
-}
-
-switch ($GpuType) {
-    "cuda"   { Write-Host "[OK] NVIDIA GPU detected (CUDA $CudaTag)" -ForegroundColor Green }
-    "hip"    { Write-Host "[OK] AMD HIP/ROCm detected" -ForegroundColor Green }
-    "vulkan" { Write-Host "[OK] Vulkan SDK detected" -ForegroundColor Green }
-    default  { Write-Host "[INFO] No GPU toolchain found. Using CPU mode." -ForegroundColor Yellow }
+    default {
+        $GpuType = "cpu"
+        Write-Host "[OK] CPU mode selected" -ForegroundColor Yellow
+    }
 }
 
 # ── Auto-select model size based on hardware ──
@@ -167,10 +139,10 @@ if ($UserModelOverride) {
     Write-Host "[INFO] Using user-specified model: Bonsai-$BonsaiModel" -ForegroundColor Cyan
 } elseif ($GpuType -eq "cpu") {
     $BonsaiModel = "4B"
-    Write-Host "[INFO] CPU detected -> auto-selecting lighter Bonsai-4B model" -ForegroundColor Yellow
+    Write-Host "[INFO] CPU mode -> downloading lighter Bonsai-4B model (faster on CPU)" -ForegroundColor Yellow
 } else {
     $BonsaiModel = "8B"
-    Write-Host "[INFO] GPU detected -> auto-selecting Bonsai-8B model" -ForegroundColor Green
+    Write-Host "[INFO] GPU mode -> downloading full Bonsai-8B model" -ForegroundColor Green
 }
 $HfGgufRepo = "prism-ml/Bonsai-${BonsaiModel}-gguf"
 
