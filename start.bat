@@ -59,9 +59,9 @@ if "%GPU_TYPE%"=="cuda" set "NGL=99"
 if "%GPU_TYPE%"=="hip" set "NGL=99"
 if "%GPU_TYPE%"=="vulkan" set "NGL=99"
 if /I "%GPU_TYPE%"=="cpu" (
-    set "CTX=1536"
-    set "THREADS=4"
-    set "BATCH=64"
+    set "CTX=512"
+    set "THREADS=1"
+    set "BATCH=32"
 )
 
 echo.
