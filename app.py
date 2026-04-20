@@ -527,9 +527,8 @@ def generate_response_stream(
                         json_data = json.loads(data)
                         if "choices" in json_data and len(json_data["choices"]) > 0:
                             token = (
-                                json_data["choices"][0]
-                                .get("delta", {})
-                                .get("content", "")
+                                json_data["choices"][0].get("delta", {}).get("content")
+                                or ""
                             )
                             full_response += token
                             yield token, full_response
