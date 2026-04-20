@@ -1,4 +1,4 @@
-# run.ps1 - Start AiMentor completely hidden, open browser automatically
+# help.ps1 - Start AiMentor completely hidden
 
 # 1. Read config files
 $GPU_TYPE = (Get-Content ".gpu_type" -Raw).Trim()
