@@ -12,125 +12,155 @@ import html
 st.set_page_config(page_title="AiMentor", page_icon="📚", layout="wide")
 
 CUSTOM_CSS = """
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    /* Professor AI Light Theme */
+    /* Professor AI Dark Theme - Navy with Gold */
     
-    /* Main Background */
+    /* Main Background - Navy Dark */
     [data-testid="stAppViewContainer"] {
-        background-color: #FAFAFA !important;
+        background-color: #0B162C !important;
     }
     [data-testid="stHeader"] {
-        background-color: #FFFFFF !important;
-        border-bottom: 1px solid #E5E5E5 !important;
+        background-color: #0D1B2A !important;
+        border-bottom: 1px solid #1E3A5F !important;
     }
     [data-testid="stSidebar"] {
-        background-color: #FFFFFF !important;
-        border-right: 1px solid #E5E5E5 !important;
+        background-color: #0D1B2A !important;
+        border-right: 1px solid #1E3A5F !important;
     }
     
-    /* Sidebar toggle visibility */
+    /* Sidebar toggle */
     [data-testid="collapsedControl"] svg, [data-testid="stSidebar"] button svg {
-        color: #1A1A1A !important;
-        fill: #1A1A1A !important;
+        color: #E8D5B7 !important;
+        fill: #E8D5B7 !important;
     }
     
-    /* Global Text Colors */
+    /* Global Text Colors - Cream */
     h1, h2, h3 {
-        color: #1A1A1A !important;
-        font-family: 'Noto Serif', 'Georgia', serif !important;
+        color: #E8D5B7 !important;
+        font-family: 'Playfair Display', 'Georgia', serif !important;
     }
-    p, li, span, label {
-        color: #404040;
+    h4, h5, h6 {
+        color: #E8D5B7 !important;
+        font-family: 'Playfair Display', serif !important;
+    }
+    p, li, span, label, div {
+        color: #C9B896 !important;
     }
     
-    /* Links */
+    /* Links - Gold */
     a {
-        color: #D4AF37 !important;
+        color: #C9A227 !important;
     }
     
-    /* Buttons */
+    /* Buttons - Gold */
     [data-testid="stButton"] button {
-        background-color: #D4AF37 !important;
+        background: linear-gradient(135deg, #C9A227 0%, #B8962F 100%) !important;
         border: none !important;
-        color: #FFFFFF !important;
+        color: #0B162C !important;
         border-radius: 8px !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
+        font-family: 'Source Sans 3', sans-serif !important;
         transition: all 0.2s ease-in-out;
     }
     [data-testid="stButton"] button:hover {
-        background-color: #B8962F !important;
-        box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3) !important;
+        background: linear-gradient(135deg, #D4AF37 0%, #C9A227 100%) !important;
+        box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3) !important;
     }
     [data-testid="stButton"] button:focus {
-        outline: 2px solid #D4AF37 !important;
+        outline: 2px solid #C9A227 !important;
         outline-offset: 2px;
     }
     
     /* Input Fields */
     [data-testid="stTextInput"] input, [data-testid="stChatInput"] input, [data-testid="stChatInput"] textarea {
-        background-color: #FFFFFF !important;
-        color: #1A1A1A !important;
-        border: 1px solid #E5E5E5 !important;
+        background-color: #1E3A5F !important;
+        color: #E8D5B7 !important;
+        border: 1px solid #2D4A6F !important;
         border-radius: 8px !important;
+        font-family: 'Source Sans 3', sans-serif !important;
     }
     [data-testid="stTextInput"] input:focus, [data-testid="stChatInput"] textarea:focus {
-        border-color: #D4AF37 !important;
-        box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1) !important;
+        border-color: #C9A227 !important;
+        box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.2) !important;
     }
     [data-testid="stTextInput"] input::placeholder, [data-testid="stChatInput"] input::placeholder, [data-testid="stChatInput"] textarea::placeholder {
-        color: #A0A0A0 !important;
+        color: #6B7B8C !important;
     }
     
-    /* Thinking Block Styling */
+    /* Thinking Block */
     details {
-        background-color: #F5F5F5 !important;
-        border: 1px solid #E5E5E5 !important;
+        background-color: #1E3A5F !important;
+        border: 1px solid #2D4A6F !important;
         padding: 12px;
         border-radius: 8px;
     }
     details summary {
-        color: #D4AF37 !important;
+        color: #C9A227 !important;
         font-weight: 500;
+        font-family: 'Playfair Display', serif !important;
     }
     
     /* Code blocks */
     .stCodeBlock > div {
-        background-color: #F5F5F5 !important;
-        border: 1px solid #E5E5E5 !important;
+        background-color: #0D1B2A !important;
+        border: 1px solid #2D4A6F !important;
         border-radius: 8px;
-    }
-    
-    /* Chat Message Bubbles */
-    [data-testid="chatMessageAvatar"] {
-        display: none !important;
     }
     
     /* Streamlit dividers */
     [data-testid="stDivider"] {
-        border-top: 1px solid #E5E5E5 !important;
+        border-top: 1px solid #2D4A6F !important;
     }
     
     /* Form containers */
     [data-testid="stForm"] {
-        background-color: #FFFFFF !important;
-        border: 1px solid #E5E5E5 !important;
+        background-color: #0D1B2A !important;
+        border: 1px solid #1E3A5F !important;
         border-radius: 12px !important;
         padding: 24px !important;
     }
     
     /* Progress bar */
     [data-testid="stProgress"] > div > div {
-        background-color: #D4AF37 !important;
+        background: linear-gradient(90deg, #C9A227, #D4AF37) !important;
+    }
+    [data-testid="stProgress"] > div {
+        background-color: #1E3A5F !important;
     }
     
     /* Radio buttons */
-    [data-testid="stRadio"] label:has(input:checked) {
-        background-color: rgba(212, 175, 55, 0.1) !important;
+    [data-testid="stRadio"] div[role="radiogroup"] > label {
+        color: #C9B896 !important;
+    }
+    [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
+        background-color: rgba(201, 162, 39, 0.2) !important;
+        border-radius: 6px;
     }
     
     /* Toasts */
     [data-testid="stToast"] {
-        border-left: 4px solid #D4AF37 !important;
+        border-left: 4px solid #C9A227 !important;
+    }
+    
+    /* Streamlit containers - max-width for scaling */
+    .block-container {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+        max-width: 900px !important;
+    }
+    
+    /* Chat message styling */
+    [data-testid="stChatMessage"] {
+        background-color: #1E3A5F !important;
+        border-radius: 12px !important;
+        padding: 16px !important;
+    }
+    
+    /* Tabs */
+    [data-testid="stTabs"] button[aria-selected="true"] {
+        color: #C9A227 !important;
+        border-bottom: 2px solid #C9A227 !important;
     }
 </style>
 """
@@ -666,19 +696,19 @@ def main():
             
             /* Chat Input Bar */
             [data-testid="stChatInput"] {
-                border: 1px solid #E5E5E5 !important;
-                background-color: #FFFFFF !important;
+                border: 1px solid #2D4A6F !important;
+                background-color: #1E3A5F !important;
                 border-radius: 8px !important;
             }
             [data-testid="stChatInput"]:focus-within {
-                border-color: #D4AF37 !important;
-                box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1) !important;
+                border-color: #C9A227 !important;
+                box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.2) !important;
             }
             
             /* Form Container */
             [data-testid="stForm"] {
-                background-color: #FFFFFF !important;
-                border: 1px solid #E5E5E5 !important;
+                background-color: #0D1B2A !important;
+                border: 1px solid #1E3A5F !important;
                 border-radius: 12px !important;
                 padding: 24px !important;
             }
