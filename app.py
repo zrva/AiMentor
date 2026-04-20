@@ -153,8 +153,52 @@ CUSTOM_CSS = """
     /* Chat message styling */
     [data-testid="stChatMessage"] {
         background-color: #1E3A5F !important;
-        border-radius: 12px !important;
-        padding: 16px !important;
+        border-radius: 16px !important;
+        padding: 16px 20px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    /* User message - right aligned, gold tint */
+    [data-testid="stChatMessage"][data-testid="user"] {
+        background-color: rgba(201, 162, 39, 0.15) !important;
+        border: 1px solid rgba(201, 162, 39, 0.3) !important;
+    }
+    
+    /* Assistant message - left aligned, navy */
+    [data-testid="stChatMessage"][data-testid="assistant"] {
+        background-color: #1E3A5F !important;
+        border: 1px solid #2D4A6F !important;
+    }
+    
+    /* Chat input container */
+    [data-testid="stChatInput"] {
+        background-color: #1E3A5F !important;
+        border: 2px solid #2D4A6F !important;
+        border-radius: 24px !important;
+        padding: 12px 20px !important;
+    }
+    [data-testid="stChatInput"]:focus-within {
+        border-color: #C9A227 !important;
+        box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.15) !important;
+    }
+    
+    /* Chat input placeholder */
+    [data-testid="stChatInput"] input {
+        color: #E8D5B7 !important;
+    }
+    [data-testid="stChatInput"] input::placeholder {
+        color: #8B9BAB !important;
+    }
+    
+    /* Send button in chat */
+    [data-testid="stChatInput"] button {
+        background-color: #C9A227 !important;
+        border-radius: 50% !important;
+        width: 40px !important;
+        height: 40px !important;
+    }
+    [data-testid="stChatInput"] button:hover {
+        background-color: #D4AF37 !important;
     }
     
     /* Tabs */
