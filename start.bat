@@ -1,4 +1,4 @@
 @echo off
 echo Starting AiMentor...
-powershell -WindowStyle Hidden -File help.ps1
+powershell -WindowStyle Minimized -File help.ps1
 exit

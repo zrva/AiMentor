@@ -1,5 +1,9 @@
 # help.ps1 - Start AiMentor completely hidden
 
+# Set working directory to where script is located
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $ScriptDir
+
 # 1. Read config files
 $GPU_TYPE = (Get-Content ".gpu_type" -Raw).Trim()
 $MODEL_SIZE = (Get-Content ".model_size" -Raw).Trim()
