@@ -150,55 +150,70 @@ CUSTOM_CSS = """
         max-width: 900px !important;
     }
     
-    /* Chat message styling */
+    /* Chat message styling - Professor AI style */
     [data-testid="stChatMessage"] {
         background-color: #1E3A5F !important;
-        border-radius: 16px !important;
-        padding: 16px 20px !important;
-        margin-bottom: 12px !important;
+        border-radius: 12px !important;
+        padding: 10px 14px !important;
+        margin: 6px 0 !important;
+        max-width: 85% !important;
+        font-family: 'Source Sans 3', sans-serif !important;
+        font-size: 14px !important;
+        line-height: 1.5 !important;
+        color: #E8D5B7 !important;
     }
     
-    /* User message - right aligned, gold tint */
+    /* User message - align right with gold tint */
     [data-testid="stChatMessage"][data-testid="user"] {
-        background-color: rgba(201, 162, 39, 0.15) !important;
-        border: 1px solid rgba(201, 162, 39, 0.3) !important;
+        background-color: rgba(201, 162, 39, 0.12) !important;
+        border: 1px solid rgba(201, 162, 39, 0.2) !important;
+        margin-left: auto !important;
     }
     
-    /* Assistant message - left aligned, navy */
+    /* Assistant message - align left with navy */
     [data-testid="stChatMessage"][data-testid="assistant"] {
         background-color: #1E3A5F !important;
         border: 1px solid #2D4A6F !important;
+        margin-right: auto !important;
     }
     
-    /* Chat input container */
+    /* Chat input - fixed at bottom */
     [data-testid="stChatInput"] {
-        background-color: #1E3A5F !important;
-        border: 2px solid #2D4A6F !important;
-        border-radius: 24px !important;
-        padding: 12px 20px !important;
+        background-color: #0D1B2A !important;
+        border: 1px solid #2D4A6F !important;
+        border-radius: 12px !important;
+        padding: 10px 14px !important;
+        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25) !important;
     }
     [data-testid="stChatInput"]:focus-within {
         border-color: #C9A227 !important;
-        box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.15) !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(201, 162, 39, 0.15) !important;
     }
     
-    /* Chat input placeholder */
+    /* Chat input text - Source Sans 3 */
     [data-testid="stChatInput"] input {
         color: #E8D5B7 !important;
+        font-family: 'Source Sans 3', sans-serif !important;
+        font-size: 15px !important;
     }
     [data-testid="stChatInput"] input::placeholder {
-        color: #8B9BAB !important;
+        color: #6B7B8C !important;
     }
     
-    /* Send button in chat */
+    /* Send button - gold */
     [data-testid="stChatInput"] button {
         background-color: #C9A227 !important;
-        border-radius: 50% !important;
-        width: 40px !important;
-        height: 40px !important;
+        border-radius: 8px !important;
+        padding: 6px 16px !important;
     }
     [data-testid="stChatInput"] button:hover {
         background-color: #D4AF37 !important;
+    }
+    
+    /* Chat scroll area */
+    [data-testid="stVerticalScrollArea"] {
+        scrollbar-width: thin !important;
+        scrollbar-color: #C9A227 #0D1B2A !important;
     }
     
     /* Tabs */
@@ -841,18 +856,34 @@ def main():
     )
 
     if app_mode == "💬 Free Chat":
-        st.markdown("### 💬 Free Chat Mode")
-        st.caption("Discuss topics directly with the AI without structured milestones.")
+        # Free Chat header - Playfair Display for headings, Source Sans 3 for body
+        st.markdown(
+            """
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <span style="font-size: 28px;">🎓</span>
+                <div>
+                    <h3 style="margin: 0; color: #E8D5B7; font-family: 'Playfair Display', Georgia, serif; font-size: 20px;">Free Chat</h3>
+                    <p style="margin: 2px 0 0 0; color: #8B9BAB; font-family: 'Source Sans 3', sans-serif; font-size: 13px;">Discuss anything with your AI mentor</p>
+                </div>
+            </div>
+        """,
+            unsafe_allow_html=True,
+        )
 
         if "free_chat_msgs" not in st.session_state:
             st.session_state.free_chat_msgs = []
 
-        for msg in st.session_state.free_chat_msgs:
-            with st.chat_message(msg["role"]):
-                if msg["role"] == "assistant":
-                    display_message(msg["content"])
+        # Chat container with better spacing
+        with st.container():
+            for msg in st.session_state.free_chat_msgs:
+                if msg["role"] == "user":
+                    with st.chat_message("user", avatar="👤"):
+                        st.markdown(msg["content"])
                 else:
-                    st.markdown(msg["content"])
+                    with st.chat_message("assistant", avatar="🎓"):
+                        display_message(msg["content"])
+
+        st.divider()
 
         is_chat_wait = (
             len(st.session_state.free_chat_msgs) > 0
