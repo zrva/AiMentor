@@ -13,73 +13,124 @@ st.set_page_config(page_title="AiMentor", page_icon="📚", layout="wide")
 
 CUSTOM_CSS = """
 <style>
-    /* Temporarily removing Menu hides to diagnose structural layout */
-
-    /* Main Background & Text */
+    /* Professor AI Light Theme */
+    
+    /* Main Background */
     [data-testid="stAppViewContainer"] {
-        background-color: #0B1120 !important;
+        background-color: #FAFAFA !important;
     }
     [data-testid="stHeader"] {
-        background-color: transparent !important;
+        background-color: #FFFFFF !important;
+        border-bottom: 1px solid #E5E5E5 !important;
     }
     [data-testid="stSidebar"] {
-        background-color: #070B14 !important;
+        background-color: #FFFFFF !important;
+        border-right: 1px solid #E5E5E5 !important;
     }
     
-    /* Make the Sidebar Slider/Toggle visible against dark background */
+    /* Sidebar toggle visibility */
     [data-testid="collapsedControl"] svg, [data-testid="stSidebar"] button svg {
-        color: #FDFBF7 !important;
-        fill: #FDFBF7 !important;
+        color: #1A1A1A !important;
+        fill: #1A1A1A !important;
     }
     
     /* Global Text Colors */
     h1, h2, h3 {
-        color: #D4AF37 !important; /* Gold */
-        font-family: 'Georgia', serif !important;
+        color: #1A1A1A !important;
+        font-family: 'Noto Serif', 'Georgia', serif !important;
     }
     p, li, span, label {
-        color: #FDFBF7; /* Cream text */
+        color: #404040;
     }
-
+    
+    /* Links */
+    a {
+        color: #D4AF37 !important;
+    }
+    
     /* Buttons */
     [data-testid="stButton"] button {
-        background-color: #111A3A !important;
-        border: 1px solid #D4AF37 !important;
-        color: #D4AF37 !important;
-        border-radius: 6px !important;
-        transition: all 0.3s ease-in-out;
+        background-color: #D4AF37 !important;
+        border: none !important;
+        color: #FFFFFF !important;
+        border-radius: 8px !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease-in-out;
     }
     [data-testid="stButton"] button:hover {
-        background-color: #D4AF37 !important;
-        color: #0B1120 !important;
-        box-shadow: 0 0 10px rgba(212, 175, 55, 0.5) !important;
+        background-color: #B8962F !important;
+        box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3) !important;
+    }
+    [data-testid="stButton"] button:focus {
+        outline: 2px solid #D4AF37 !important;
+        outline-offset: 2px;
     }
     
     /* Input Fields */
     [data-testid="stTextInput"] input, [data-testid="stChatInput"] input, [data-testid="stChatInput"] textarea {
-        background-color: #111A3A !important;
-        color: #FDFBF7 !important;
-        border: 1px solid #3A4B75 !important;
+        background-color: #FFFFFF !important;
+        color: #1A1A1A !important;
+        border: 1px solid #E5E5E5 !important;
+        border-radius: 8px !important;
     }
     [data-testid="stTextInput"] input:focus, [data-testid="stChatInput"] textarea:focus {
         border-color: #D4AF37 !important;
+        box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1) !important;
+    }
+    [data-testid="stTextInput"] input::placeholder, [data-testid="stChatInput"] input::placeholder, [data-testid="stChatInput"] textarea::placeholder {
+        color: #A0A0A0 !important;
     }
     
-    /* Thinking HTML Expanders */
+    /* Thinking Block Styling */
     details {
-        background-color: #111A3A !important;
-        border: 1px solid rgba(212, 175, 55, 0.3) !important;
+        background-color: #F5F5F5 !important;
+        border: 1px solid #E5E5E5 !important;
         padding: 12px;
         border-radius: 8px;
     }
     details summary {
         color: #D4AF37 !important;
+        font-weight: 500;
     }
     
-    /* Code block backgrounds (override dark theme defaults) */
+    /* Code blocks */
     .stCodeBlock > div {
-        background-color: #060910 !important;
-        border: 1px solid rgba(212, 175, 55, 0.2) !important;
+        background-color: #F5F5F5 !important;
+        border: 1px solid #E5E5E5 !important;
+        border-radius: 8px;
+    }
+    
+    /* Chat Message Bubbles */
+    [data-testid="chatMessageAvatar"] {
+        display: none !important;
+    }
+    
+    /* Streamlit dividers */
+    [data-testid="stDivider"] {
+        border-top: 1px solid #E5E5E5 !important;
+    }
+    
+    /* Form containers */
+    [data-testid="stForm"] {
+        background-color: #FFFFFF !important;
+        border: 1px solid #E5E5E5 !important;
+        border-radius: 12px !important;
+        padding: 24px !important;
+    }
+    
+    /* Progress bar */
+    [data-testid="stProgress"] > div > div {
+        background-color: #D4AF37 !important;
+    }
+    
+    /* Radio buttons */
+    [data-testid="stRadio"] label:has(input:checked) {
+        background-color: rgba(212, 175, 55, 0.1) !important;
+    }
+    
+    /* Toasts */
+    [data-testid="stToast"] {
+        border-left: 4px solid #D4AF37 !important;
     }
 </style>
 """
@@ -328,10 +379,10 @@ def process_stream_ui(stream_generator):
         if token == "[SSE_ERROR]":
             # Throttle toast notifications to avoid spamming the UI
             now = time.time()
-            last = st.session_state.get('last_sse_error_time', 0)
+            last = st.session_state.get("last_sse_error_time", 0)
             if now - last > 5:
                 st.toast(full, icon="⚠️")
-                st.session_state['last_sse_error_time'] = now
+                st.session_state["last_sse_error_time"] = now
             continue
 
         full_response = full
@@ -461,9 +512,16 @@ def generate_response_stream(
 def reset_to_home():
     # Clear only app-specific keys, preserve internal Streamlit keys
     app_keys = [
-        "phase", "topic", "syllabus_raw", "syllabus_parsed",
-        "current_section", "completed_sections", "messages",
-        "expertise_level", "doubts_asked", "free_chat_msgs",
+        "phase",
+        "topic",
+        "syllabus_raw",
+        "syllabus_parsed",
+        "current_section",
+        "completed_sections",
+        "messages",
+        "expertise_level",
+        "doubts_asked",
+        "free_chat_msgs",
         "last_sse_error_time",
     ]
     for key in app_keys:
@@ -595,33 +653,34 @@ def main():
             footer {visibility: hidden;}
             #stDecoration {display:none;}
 
-            /* High-Visibility Input Borders for pure-black terminal theme */
+            /* Input Fields - Light Theme */
             div[data-baseweb="input"] > div {
-                border: 1px solid #555 !important;
-                background-color: #0d0d0d !important;
-                border-radius: 6px !important;
+                border: 1px solid #E5E5E5 !important;
+                background-color: #FFFFFF !important;
+                border-radius: 8px !important;
             }
             div[data-baseweb="input"] > div:focus-within {
-                border: 1px solid #00FF00 !important;
-                box-shadow: 0 0 8px rgba(0, 255, 0, 0.3) !important;
+                border-color: #D4AF37 !important;
+                box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1) !important;
             }
             
-            /* High-Visibility Chat Input Bar */
+            /* Chat Input Bar */
             [data-testid="stChatInput"] {
-                border: 1px solid #555 !important;
-                background-color: #0d0d0d !important;
+                border: 1px solid #E5E5E5 !important;
+                background-color: #FFFFFF !important;
                 border-radius: 8px !important;
             }
             [data-testid="stChatInput"]:focus-within {
-                border: 1px solid #00FF00 !important;
-                box-shadow: 0 0 8px rgba(0, 255, 0, 0.3) !important;
+                border-color: #D4AF37 !important;
+                box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1) !important;
             }
             
-            /* Form Container Box Styling */
+            /* Form Container */
             [data-testid="stForm"] {
-                background-color: #0B0B0B !important;
-                border: 1px solid #333 !important;
-                border-radius: 10px !important;
+                background-color: #FFFFFF !important;
+                border: 1px solid #E5E5E5 !important;
+                border-radius: 12px !important;
+                padding: 24px !important;
             }
         </style>
     """,
@@ -664,7 +723,9 @@ def main():
         top_p = runtime_profile["top_p"]
 
         if runtime_profile["gpu_type"] == "cpu":
-            st.caption("CPU mode: reduced output budget for lower memory use and faster replies.")
+            st.caption(
+                "CPU mode: reduced output budget for lower memory use and faster replies."
+            )
 
         if st.button("🏠 Home / Clear Chat", use_container_width=True):
             reset_to_home()
@@ -773,10 +834,25 @@ def main():
                 if submitted and prompt:
                     # Guard: detect greetings / chitchat instead of real topics
                     greeting_patterns = [
-                        "hi", "hello", "hey", "hii", "hiii", "yo", "sup",
-                        "who are you", "what are you", "how are you",
-                        "whats up", "what's up", "good morning", "good evening",
-                        "good night", "thanks", "thank you", "bye", "goodbye",
+                        "hi",
+                        "hello",
+                        "hey",
+                        "hii",
+                        "hiii",
+                        "yo",
+                        "sup",
+                        "who are you",
+                        "what are you",
+                        "how are you",
+                        "whats up",
+                        "what's up",
+                        "good morning",
+                        "good evening",
+                        "good night",
+                        "thanks",
+                        "thank you",
+                        "bye",
+                        "goodbye",
                     ]
                     cleaned = prompt.strip().lower().rstrip("!?.,")
                     if cleaned in greeting_patterns:
@@ -790,7 +866,9 @@ def main():
                         st.session_state.topic = prompt
                         st.session_state.expertise_level = expertise_select
                         st.session_state.phase = "generating_syllabus"
-                        st.session_state.messages = [{"role": "user", "content": prompt}]
+                        st.session_state.messages = [
+                            {"role": "user", "content": prompt}
+                        ]
                         st.rerun()
 
             checkpoints = glob.glob(os.path.join(WORKSPACE, "syllabus_*.md"))
