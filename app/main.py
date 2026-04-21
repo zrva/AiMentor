@@ -131,18 +131,24 @@ CUSTOM_CSS = """
     }
     
     /* Radio buttons */
-    [data-testid="stRadio"] div[role="radiogroup"] > label {
-        color: #C9B896 !important;
-    }
-    [data-testid="stRadio"] div[role="radiogroup"] {
+    [data-testid="stRadio"] > div {
         display: flex !important;
         justify-content: space-between !important;
-        width: 100% !important;
+        gap: 0 !important;
     }
     [data-testid="stRadio"] div[role="radiogroup"] > label {
-        flex: 1 !important;
+        color: #C9B896 !important;
+        flex: 1 1 0 !important;
         text-align: center !important;
-        padding: 8px 16px !important;
+        margin: 0 !important;
+        padding: 8px 4px !important;
+        min-width: 0 !important;
+    }
+    [data-testid="stRadio"] div[role="radiogroup"] > label span {
+        display: block !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
     [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
         background-color: rgba(201, 162, 39, 0.2) !important;
