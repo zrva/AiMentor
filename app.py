@@ -728,11 +728,8 @@ def parse_syllabus_structure(syllabus_text):
         )
 
         is_explicit_header = clean_line.startswith("#")
-        is_bold_header = clean_line.startswith("**") and not re.match(
-            r"^\*\*(.+?)\*\*:", clean_line
-        )
 
-        if is_explicit_header or is_bold_header:
+        if is_explicit_header:
             if header_match and len(header_match.group(1).strip()) > 3:
                 title = header_match.group(1).strip()
                 if not any(s["title"] == title for s in structure):
@@ -774,17 +771,17 @@ EXPERTISE_LEVELS = {
 }
 
 SYLLABUS_PROMPT = """
-Create a learning path for {topic}.
+Start your response with an obscure, mind-bending fact or "aura" fact about {topic} that will completely hook the user. Make it bold (e.g., **Did you know...**).
 
-Start with a surprising fact (use Markdown **bold** or `###` large headings) that pulls the user in - NO labels like "Hook:"
+After the hook, create a learning roadmap for {topic}.
 
-Format the path with interesting topic-specific headings. Use strict Markdown headers (`### Section Title`) and bold bullet points (`- **Subtopic:**`) so it renders beautifully. (NOT generic "Index" or "Table of Contents")
-Ensure the names of subtopics are very short and concise (1-4 words max).
+Format the path with interesting topic-specific headings. You MUST use strict Markdown headers (`### Section Title`) for each main section, and bullet points (`- **Subtopic:**`) for the concepts under them. (Do NOT use generic titles like "Index" or "Table of Contents").
+Ensure the names of subtopics are short and concise (1-4 words max).
 
 Be mindful:
-- Curiosity-sparking titles that make them want to click
+- Curiosity-sparking titles that make them want to explore
 - Balance length: NOT too long they lose motivation, NOT too short they learn nothing
-- You expand on each topic when teaching - this is just the roadmap
+- You will expand on each topic when teaching - this is strictly just the roadmap structure.
 
 Expertise: {expertise}
 """
