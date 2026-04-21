@@ -1902,21 +1902,21 @@ def main():
 
             # ── Topic form ────────────────────────────────────
             with st.form("topic_entry"):
-            st.markdown(
-                "<div style='font-size:10px;text-transform:uppercase;letter-spacing:0.12em;"
-                "color:#6b7b8c;text-align:center;margin-bottom:8px;font-family:\"Source Sans 3\",sans-serif;'>"
-                "Select your level</div>",
-                unsafe_allow_html=True,
-            )
-            expertise_select = st.radio(
-                "",
-                expertise_options,
-                horizontal=True,
-                label_visibility="collapsed",
-                key="expertise_radio",
-            )
-            
-            st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
+                st.markdown(
+                    "<div style='font-size:10px;text-transform:uppercase;letter-spacing:0.12em;"
+                    "color:#6b7b8c;text-align:center;margin-bottom:8px;font-family:\"Source Sans 3\",sans-serif;'>"
+                    "Select your level</div>",
+                    unsafe_allow_html=True,
+                )
+                expertise_select = st.radio(
+                    "",
+                    expertise_options,
+                    horizontal=True,
+                    label_visibility="collapsed",
+                    key="expertise_radio",
+                )
+                
+                st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 
                 st.markdown(
                     "<label style='font-family:Playfair Display,serif;"

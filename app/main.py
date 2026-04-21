@@ -972,11 +972,11 @@ def main():
             st.markdown("### What would you like to learn today?")
 
             with st.form("topic_entry"):
-            expertise_select = st.radio(
-                "What is your current expertise level on this topic?",
-                list(EXPERTISE_LEVELS.keys()),
-                horizontal=True,
-            )
+                expertise_select = st.radio(
+                    "What is your current expertise level on this topic?",
+                    list(EXPERTISE_LEVELS.keys()),
+                    horizontal=True,
+                )
                 prompt = st.text_input(
                     "Enter a topic (e.g., Quantum Computing, Python Web Scraping)..."
                 )
