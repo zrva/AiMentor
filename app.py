@@ -1390,40 +1390,41 @@ def main():
                     )
                 st.markdown(items_html, unsafe_allow_html=True)
 
+        elif app_mode == "💬 Free Chat":
+            # Sidebar History section for Free Chat
+            st.markdown("<div class='sb-label'>Past Conversations</div>", unsafe_allow_html=True)
+            fc_files = [f for f in os.listdir(WORKSPACE) if f.startswith("freechat_") and f.endswith(".json")]
+            fc_files.sort(reverse=True, key=lambda x: os.path.getmtime(os.path.join(WORKSPACE, x)))
+            
+            if not fc_files:
+                st.markdown(
+                    "<p style='font-size:12px;color:#6b7b8c;padding:0 12px;'>"
+                    "Start chatting to save history."
+                    "</p>",
+                    unsafe_allow_html=True,
+                )
+            else:
+                for f in fc_files[:8]:
+                    try:
+                        # freechat_TIMESTAMP_title.json
+                        _ts, _title = f.replace("freechat_", "").replace(".json", "").split("_", 1)
+                        date_str = time.strftime('%b %d', time.localtime(int(_ts)))
+                        display_title = _title.replace("_", " ").title()
+                        if len(display_title) > 18:
+                            display_title = display_title[:18] + "…"
+                            
+                        if st.button(f"💬 {display_title} ({date_str})", key=f"res_{f}"):
+                            restore_freechat_checkpoint(f)
+                            st.rerun()
+                    except Exception:
+                        pass
+
     # Flow Control
     is_waiting_for_model = (
         len(st.session_state.messages) > 0
         and st.session_state.messages[-1]["role"] == "user"
     )
 
-        # Sidebar History section for Free Chat
-        st.markdown("<div class='sb-label'>Past Conversations</div>", unsafe_allow_html=True)
-        fc_files = [f for f in os.listdir(WORKSPACE) if f.startswith("freechat_") and f.endswith(".json")]
-        fc_files.sort(reverse=True, key=lambda x: os.path.getmtime(os.path.join(WORKSPACE, x)))
-        
-        if not fc_files:
-            st.markdown(
-                "<p style='font-size:12px;color:#6b7b8c;padding:0 12px;'>"
-                "Start chatting to save history."
-                "</p>",
-                unsafe_allow_html=True,
-            )
-        else:
-            for f in fc_files[:8]:
-                try:
-                    # freechat_TIMESTAMP_title.json
-                    _ts, _title = f.replace("freechat_", "").replace(".json", "").split("_", 1)
-                    date_str = time.strftime('%b %d', time.localtime(int(_ts)))
-                    display_title = _title.replace("_", " ").title()
-                    if len(display_title) > 18:
-                        display_title = display_title[:18] + "…"
-                        
-                    if st.button(f"💬 {display_title} ({date_str})", key=f"res_{f}"):
-                        restore_freechat_checkpoint(f)
-                        st.rerun()
-                except Exception:
-                    pass
-                    
     if app_mode == "💬 Free Chat":
         # ══════════════════════════════════════════════════════
         #   COSMIC FREE CHAT — Artistic UI Layer
