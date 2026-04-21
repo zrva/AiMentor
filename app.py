@@ -605,52 +605,54 @@ details pre {
 
 /* ─── NATIVE EXPERTISE PILL SELECTOR ─── */
 /* Transform the main content radio (Expertise) into 3 equal pills */
-.block-container [data-testid="stRadio"] > div {
+.block-container [data-testid="stRadio"] div[role="radiogroup"] {
   gap: 8px !important;
   display: grid !important;
   grid-template-columns: 1fr 1fr 1fr !important;
-  justify-items: start !important;
+  width: 100% !important;
 }
-.block-container [data-testid="stRadio"] label {
+.block-container [data-testid="stRadio"] div[role="radiogroup"] label {
   background: var(--bg-card) !important;
   border: 1px solid var(--border) !important;
   border-radius: 10px !important;
   padding: 10px 12px !important;
-  text-align: left !important;
+  text-align: center !important;
   transition: all 0.18s ease !important;
   cursor: pointer !important;
   display: flex !important;
-  justify-content: flex-start !important;
+  justify-content: center !important;
   align-items: center !important;
   width: 100% !important;
   box-sizing: border-box !important;
-}
-/* Hide the native radio circle element */
-.block-container [data-testid="stRadio"] label div[data-testid="stMarkdownContainer"] {
-  width: 100% !important;
-  text-align: left !important;
-  display: block !important;
-}
-.block-container [data-testid="stRadio"] label p {
-  text-align: left !important;
   margin: 0 !important;
 }
-.block-container [data-testid="stRadio"] label span[data-baseweb="radio"] {
+/* Hide the native radio circle element */
+.block-container [data-testid="stRadio"] div[role="radiogroup"] label div[data-testid="stMarkdownContainer"] {
+  width: 100% !important;
+  text-align: center !important;
+  display: block !important;
+}
+.block-container [data-testid="stRadio"] div[role="radiogroup"] label p {
+  text-align: center !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+}
+.block-container [data-testid="stRadio"] div[role="radiogroup"] label span[data-baseweb="radio"] {
   display: none !important;
 }
 /* Inactive Hover */
-.block-container [data-testid="stRadio"] label:hover {
+.block-container [data-testid="stRadio"] div[role="radiogroup"] label:hover {
   background: rgba(201,162,39,0.07) !important;
   border-color: rgba(201,162,39,0.25) !important;
 }
 /* Active state */
-.block-container [data-testid="stRadio"] label:has(input:checked) {
+.block-container [data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) {
   background: rgba(201,162,39,0.18) !important;
-  border-color: rgba(201,162,39,0.45) !important;
+  border: 1px solid rgba(201,162,39,0.45) !important;
   color: var(--gold-light) !important;
   box-shadow: 0 0 14px rgba(201,162,39,0.15) !important;
 }
-.block-container [data-testid="stRadio"] label:has(input:checked) p {
+.block-container [data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) p {
   color: var(--gold-light) !important;
   font-weight: 600 !important;
 }
@@ -1896,13 +1898,16 @@ def main():
                 unsafe_allow_html=True,
             )
 
+            expertise_options = list(EXPERTISE_LEVELS.keys())
+
+            # ── Topic form ────────────────────────────────────
+            with st.form("topic_entry"):
             st.markdown(
                 "<div style='font-size:10px;text-transform:uppercase;letter-spacing:0.12em;"
                 "color:#6b7b8c;text-align:center;margin-bottom:8px;font-family:\"Source Sans 3\",sans-serif;'>"
                 "Select your level</div>",
                 unsafe_allow_html=True,
             )
-            expertise_options = list(EXPERTISE_LEVELS.keys())
             expertise_select = st.radio(
                 "",
                 expertise_options,
@@ -1910,11 +1915,9 @@ def main():
                 label_visibility="collapsed",
                 key="expertise_radio",
             )
+            
+            st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 
-            st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
-
-            # ── Topic form ────────────────────────────────────
-            with st.form("topic_entry"):
                 st.markdown(
                     "<label style='font-family:Playfair Display,serif;"
                     "font-size:1.1rem;color:#e8d5b7;display:block;margin-bottom:10px;'>"

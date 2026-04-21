@@ -131,44 +131,39 @@ CUSTOM_CSS = """
     }
     
     /* Radio buttons - Expertise selector alignment */
-    [data-testid="stRadio"] > div {
-        display: flex !important;
-        justify-content: flex-start !important;
-        gap: 8px !important;
-    }
     [data-testid="stRadio"] div[role="radiogroup"] {
         display: flex !important;
         flex-direction: row !important;
-        justify-content: flex-start !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
         width: 100% !important;
     }
     [data-testid="stRadio"] div[role="radiogroup"] > label {
+        background-color: #1E3A5F !important;
+        border: 1px solid #2D4A6F !important;
+        border-radius: 8px !important;
         color: #C9B896 !important;
         flex: 1 1 0 !important;
-        text-align: left !important;
+        text-align: center !important;
         margin: 0 !important;
         padding: 10px 12px !important;
         min-width: 0 !important;
         display: flex !important;
-        justify-content: flex-start !important;
+        justify-content: center !important;
         align-items: center !important;
+        transition: all 0.2s ease !important;
     }
     [data-testid="stRadio"] div[role="radiogroup"] > label span {
-        display: block !important;
-        text-align: left !important;
+        display: none !important;
     }
     [data-testid="stRadio"] div[role="radiogroup"] > label p {
-        text-align: left !important;
+        text-align: center !important;
         margin: 0 !important;
     }
     [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
         background-color: rgba(201, 162, 39, 0.2) !important;
-        border-radius: 6px;
-    }
-    [data-testid="stRadio"] div[role="radiogroup"] label input {
-        position: relative !important;
-        z-index: 1 !important;
-        pointer-events: auto !important;
+        border: 1px solid #C9A227 !important;
+        color: #C9A227 !important;
     }
     
     /* Toasts */
@@ -976,13 +971,12 @@ def main():
         with home_placeholder.container():
             st.markdown("### What would you like to learn today?")
 
+            with st.form("topic_entry"):
             expertise_select = st.radio(
                 "What is your current expertise level on this topic?",
                 list(EXPERTISE_LEVELS.keys()),
                 horizontal=True,
             )
-
-            with st.form("topic_entry"):
                 prompt = st.text_input(
                     "Enter a topic (e.g., Quantum Computing, Python Web Scraping)..."
                 )
