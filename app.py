@@ -62,8 +62,8 @@ CUSTOM_CSS = """
   max-width: 920px !important;
 }
 
-/* hide deploy button & footer */
-#MainMenu, footer, [data-testid="stToolbar"], .stAppDeployButton { display: none !important; }
+/* hide deploy button & footer — keep sidebar toggle visible */
+#MainMenu, footer, .stAppDeployButton { display: none !important; }
 
 /* ─── TYPOGRAPHY ───────────────────────────── */
 *, *::before, *::after {
@@ -593,9 +593,16 @@ details pre {
   color: #ef4444;
 }
 
-/* Expertise pill selector */
-[data-testid="stRadio"] > div {
-  gap: 8px !important;
+/* Hide the expertise-level radio—we show custom pills instead */
+div[data-testid="stRadio"]:has(div[role="radiogroup"] label:nth-child(3)) {
+  display: none !important;
+}
+/* Sidebar mode radio—keep visible, fix gap */
+[data-testid="stSidebar"] [data-testid="stRadio"] > div {
+  gap: 6px !important;
+}
+[data-testid="stSidebar"] [data-testid="stRadio"] > div {
+  display: block !important;
 }
 /* ─── SIDEBAR LEARNING PATH ────────────────── */
 .sb-label {
@@ -1751,20 +1758,72 @@ def main():
                 unsafe_allow_html=True,
             )
 
-            # ── Expertise selector ────────────────────────────
-            st.markdown(
-                "<p style='font-size:13px;color:#6b7b8c;text-align:center;"
-                "margin-bottom:6px;'>Select your expertise level</p>",
-                unsafe_allow_html=True,
-            )
+            # ── Expertise selector — 3 equal pills aligned with the form box ──
+            st.html("""
+            <style>
+            /* expertise pill row — full width, 3 equal cells */
+            .exp-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 8px;
+                margin: 0 0 10px 0;
+            }
+            .exp-pill {
+                text-align: center;
+                padding: 10px 4px;
+                border-radius: 10px;
+                border: 1px solid #1f3655;
+                background: #121f38;
+                cursor: pointer;
+                font-family: 'Source Sans 3', sans-serif;
+                font-size: 13px;
+                color: #c9b896;
+                transition: all 0.18s ease;
+                line-height: 1.3;
+                user-select: none;
+            }
+            .exp-pill.active {
+                background: rgba(201,162,39,0.18);
+                border-color: rgba(201,162,39,0.45);
+                color: #d4af37;
+                font-weight: 600;
+                box-shadow: 0 0 14px rgba(201,162,39,0.15);
+            }
+            .exp-pill:hover:not(.active) {
+                border-color: rgba(201,162,39,0.25);
+                background: rgba(201,162,39,0.07);
+            }
+            .exp-label {
+                font-size: 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.12em;
+                color: #6b7b8c;
+                text-align: center;
+                margin-bottom: 8px;
+                font-family: 'Source Sans 3', sans-serif;
+            }
+            </style>
+            """)
+            expertise_options = list(EXPERTISE_LEVELS.keys())
+            # short display labels so they fit neatly
+            short_labels = ["Beginner", "Intermediate", "Expert"]
             expertise_select = st.radio(
                 "",
-                list(EXPERTISE_LEVELS.keys()),
+                expertise_options,
                 horizontal=True,
                 label_visibility="collapsed",
+                key="expertise_radio",
             )
+            # overlay the radio with styled pills via CSS
+            active_idx = expertise_options.index(expertise_select)
+            pills_html = '<div class="exp-label">Select your level</div><div class="exp-row">'
+            for i, lbl in enumerate(short_labels):
+                cls = 'exp-pill active' if i == active_idx else 'exp-pill'
+                pills_html += f'<div class="{cls}">{lbl}</div>'
+            pills_html += '</div>'
+            st.markdown(pills_html, unsafe_allow_html=True)
 
-            st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
 
             # ── Topic form ────────────────────────────────────
             with st.form("topic_entry"):
