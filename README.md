@@ -52,15 +52,33 @@ $env:BONSAI_MODEL = "4B"    # Supported: 8B, 4B
 ## Requirements
 
 - **Windows 10/11** (macOS/Linux support coming later)
-- **Internet** for first-time setup only (downloads ~2-5 GB depending on model)
+- **Internet** for first-time setup only
+
+### Setup Time & Download Sizes
+**GPU Setup (NVIDIA/AMD):**
+- **Time:** 30-40 minutes
+- **Download:** ~2.5-3 GB
+- **Model:** Bonsai-8B (larger, higher quality)
+
+**CPU Setup:**
+- **Time:** 15-20 minutes  
+- **Download:** ~1-1.5 GB
+- **Model:** Bonsai-4B (smaller, optimized for CPU)
+
+**Performance Comparison:**
+- **CPU:** Extremely slow response times
+  - Context Window: 2,048 tokens (server limit)
+  - Max Output: ~1,024 tokens (application limit)
+- **GPU:** Near-instant responses
+  - Context Window: 4,096 tokens (server limit)
+  - Max Output: ~6,500 tokens (application limit)
 
 | Context Size | Est. Memory Usage |
 |-------------|-----------------|
-| 8,192 tokens | ~2.5 GB |
-| 32,768 tokens | ~5.9 GB |
-| 65,536 tokens | ~10.5 GB |
+| 2,048 tokens (CPU context window) | ~1.5-2 GB |
+| 4,096 tokens (GPU context window) | ~2.5-3.5 GB |
 
-- **GPU** (optional): NVIDIA (CUDA), AMD (ROCm/HIP), or Vulkan — CPU works too, just slower
+- **GPU** (optional): NVIDIA (CUDA), AMD (ROCm/HIP), or Vulkan — CPU works too, but is significantly slower
 
 ## File Structure
 
@@ -73,5 +91,17 @@ AiMentor/
 ├── requirements.txt   ← Python dependencies
 ├── bin/               ← Downloaded llama-server binaries
 ├── models/            ← Downloaded GGUF models
+├── assets/            ← Screenshots and media
+│   └── screenshots/   ← UI screenshots
 └── llm_workspace/     ← Saved checkpoints and progress
 ```
+
+## Screenshots
+
+![Course Generation - Syllabus Section](assets/screenshots/syllabus_section.png)
+![Course Generation - Section 1](assets/screenshots/section_1.png)
+![Course Generation - Generate Syllabus](assets/screenshots/generates_syllabus.png)
+![Chat Interface](assets/screenshots/freechat.png)
+![Chat Interface with Question](assets/screenshots/freechat_question.png)
+
+*Add additional screenshots to the `assets/screenshots` directory and reference them above.*
