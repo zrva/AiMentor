@@ -597,6 +597,58 @@ details pre {
 [data-testid="stRadio"] > div {
   gap: 8px !important;
 }
+/* ─── SIDEBAR LEARNING PATH ────────────────── */
+.sb-label {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  padding: 4px 12px;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+.sb-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: var(--radius-md);
+  margin: 2px 0;
+  transition: background 0.15s;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.sb-section .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.sb-section.completed .dot { background: var(--gold); }
+.sb-section.current   .dot { background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.6); }
+.sb-section.locked    .dot { background: var(--border); }
+.sb-section.completed { color: var(--cream-muted) !important; }
+.sb-section.current   { color: var(--cream) !important; background: rgba(201,162,39,0.06); }
+.sb-section.locked    { color: var(--muted) !important; }
+
+/* Teaching progress bar (sidebar) */
+.teach-progress {
+  background: rgba(31,54,85,0.5);
+  border-radius: 99px;
+  height: 4px;
+  overflow: hidden;
+  margin: 6px 0 14px;
+}
+.teach-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 99px;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 6px rgba(201,162,39,0.5);
+}
 
 </style>
 """
