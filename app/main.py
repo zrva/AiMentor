@@ -8,6 +8,7 @@ import glob
 import requests
 import json
 import html
+from datetime import datetime
 
 st.set_page_config(page_title="AiMentor", page_icon="📚", layout="wide")
 
@@ -150,11 +151,17 @@ CUSTOM_CSS = """
         max-width: 900px !important;
     }
     
-    /* Chat message styling */
+    /* Chat message styling - target inner content for proper text alignment */
     [data-testid="stChatMessage"] {
         background-color: #1E3A5F !important;
         border-radius: 12px !important;
-        padding: 16px !important;
+        padding: 0 !important;
+    }
+    [data-testid="stChatMessageContent"] {
+        background-color: #1E3A5F !important;
+        border-radius: 12px !important;
+        padding: 12px 16px !important;
+        text-align: left !important;
     }
     
     /* Tabs */
@@ -569,6 +576,69 @@ def reset_to_home():
     st.session_state.doubts_asked = 0
 
 
+def save_free_chat():
+    """Save free chat conversation to md file"""
+    if not st.session_state.get("free_chat_msgs"):
+        return
+    timestamp = time.strftime("%Y%m%d_%H%M%S")
+    lines = ["# Free Chat Conversation", "", "## Messages"]
+    for msg in st.session_state.free_chat_msgs:
+        role_label = "User" if msg["role"] == "user" else "Assistant"
+        lines.extend(["", f"### {role_label}", "", msg["content"]])
+    content = "\n".join(lines)
+    filename = f"freechat_{timestamp}.md"
+    try:
+        with open(os.path.join(WORKSPACE, filename), "w", encoding="utf-8") as f:
+            f.write(content)
+        return filename
+    except Exception:
+        return None
+
+
+def restore_free_chat(filename):
+    """Restore free chat from saved md file"""
+    filepath = os.path.join(WORKSPACE, filename)
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read()
+        lines = content.split("\n")
+        msgs = []
+        current_role = None
+        current_content = []
+        for line in lines:
+            if line.startswith("### User"):
+                if current_role and current_content:
+                    msgs.append(
+                        {
+                            "role": current_role,
+                            "content": "\n".join(current_content).strip(),
+                        }
+                    )
+                current_role = "user"
+                current_content = []
+            elif line.startswith("### Assistant"):
+                if current_role and current_content:
+                    msgs.append(
+                        {
+                            "role": current_role,
+                            "content": "\n".join(current_content).strip(),
+                        }
+                    )
+                current_role = "assistant"
+                current_content = []
+            elif line.startswith("# ") or line.startswith("## "):
+                continue
+            else:
+                current_content.append(line)
+        if current_role and current_content:
+            msgs.append(
+                {"role": current_role, "content": "\n".join(current_content).strip()}
+            )
+        st.session_state.free_chat_msgs = msgs
+    except Exception:
+        st.toast("⚠️ Failed to restore chat.", icon="⚠️")
+
+
 def save_progress_checkpoint():
     """Save current progress to md file"""
     topic = st.session_state.topic
@@ -804,6 +874,31 @@ def main():
         if "free_chat_msgs" not in st.session_state:
             st.session_state.free_chat_msgs = []
 
+        past_chats = glob.glob(os.path.join(WORKSPACE, "freechat_*.md"))
+        if past_chats and len(st.session_state.free_chat_msgs) == 0:
+            st.markdown("**Past Conversations:**")
+            past_cols = st.columns(3)
+            for idx, chat_file in enumerate(
+                sorted(past_chats, key=os.path.getmtime, reverse=True)[:3]
+            ):
+                basename = os.path.basename(chat_file)
+                date_str = basename.replace("freechat_", "").replace(".md", "")
+                try:
+                    date_fmt = datetime.strptime(date_str, "%Y%m%d_%H%M%S").strftime(
+                        "%b %d, %H:%M"
+                    )
+                except Exception:
+                    date_fmt = date_str
+                with past_cols[idx % 3]:
+                    if st.button(
+                        f"💬 {date_fmt}",
+                        key=f"restore_{basename}",
+                        use_container_width=True,
+                    ):
+                        restore_free_chat(basename)
+                        st.rerun()
+            st.markdown("---")
+
         for msg in st.session_state.free_chat_msgs:
             with st.chat_message(msg["role"]):
                 if msg["role"] == "assistant":
@@ -840,6 +935,7 @@ def main():
                 st.session_state.free_chat_msgs.append(
                     {"role": "assistant", "content": ans}
                 )
+                save_free_chat()
                 st.rerun()
         return
 
