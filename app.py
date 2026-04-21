@@ -187,23 +187,16 @@ a { color: var(--gold) !important; }
   background: var(--bg-card) !important;
   border: 1px solid var(--border) !important;
   border-radius: var(--radius-lg) !important;
-  margin: 8px 0 !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.25) !important;
+  margin: 12px 0 !important;
+  padding: 16px 20px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2) !important;
   transition: box-shadow 0.2s !important;
-}
-/* Fix the internal content column so text stays left-aligned and wraps properly */
-[data-testid="stChatMessage"] > div {
-  min-width: 0 !important;
-  width: 100% !important;
 }
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] {
   font-family: 'Source Sans 3', sans-serif !important;
   font-size: 15px !important;
   line-height: 1.65 !important;
   color: var(--cream) !important;
-  word-wrap: break-word !important;
-  overflow-wrap: break-word !important;
-  max-width: 100% !important;
 }
 [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
   background: rgba(201,162,39,0.08) !important;
@@ -1621,21 +1614,13 @@ def main():
         /* ── Free chat message overrides ── */
         [data-testid="stChatMessage"] {
             border-radius: 18px !important;
-            margin: 10px 0 !important;
-        }
-        /* Fix inner layout so markdown text wraps correctly */
-        [data-testid="stChatMessage"] > div {
-            min-width: 0 !important;
-            flex: 1 1 0% !important;
-            width: 100% !important;
-            align-items: flex-start !important;
+            margin: 12px 0 !important;
+            padding: 16px 20px !important;
+            backdrop-filter: blur(6px) !important;
         }
         [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p,
         [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] li,
         [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] span {
-            word-break: break-word !important;
-            overflow-wrap: break-word !important;
-            max-width: 100% !important;
             color: #e2dfff !important;
         }
         /* User bubble — warm amber crystal */
