@@ -139,7 +139,7 @@ CUSTOM_CSS = """
     [data-testid="stRadio"] div[role="radiogroup"] > label {
         color: #C9B896 !important;
         flex: 1 1 0 !important;
-        text-align: center !important;
+        text-align: left !important;
         margin: 0 !important;
         padding: 8px 4px !important;
         min-width: 0 !important;
