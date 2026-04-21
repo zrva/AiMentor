@@ -133,11 +133,16 @@ CUSTOM_CSS = """
     /* Radio buttons */
     [data-testid="stRadio"] div[role="radiogroup"] > label {
         color: #C9B896 !important;
-        white-space: nowrap !important;
     }
-    [data-testid="stRadio"] div[role="radiogroup"] > label span:first-child {
-        white-space: nowrap !important;
-        display: block;
+    [data-testid="stRadio"] div[role="radiogroup"] {
+        display: flex !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+    }
+    [data-testid="stRadio"] div[role="radiogroup"] > label {
+        flex: 1 !important;
+        text-align: center !important;
+        padding: 8px 16px !important;
     }
     [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
         background-color: rgba(201, 162, 39, 0.2) !important;
@@ -954,22 +959,11 @@ def main():
         with home_placeholder.container():
             st.markdown("### What would you like to learn today?")
 
-            st.caption("What is your current expertise level on this topic?")
-            expertise_levels = list(EXPERTISE_LEVELS.keys())
-            if "expertise_select" not in st.session_state:
-                st.session_state.expertise_select = 0
-            cols = st.columns(3)
-            for idx, level in enumerate(expertise_levels):
-                with cols[idx]:
-                    btn_label = level.split(" (")[0]
-                    if st.button(
-                        btn_label,
-                        key=f"exp_{idx}",
-                        use_container_width=True,
-                    ):
-                        st.session_state.expertise_select = idx
-                        st.rerun()
-            expertise_select = expertise_levels[st.session_state.expertise_select]
+            expertise_select = st.radio(
+                "What is your current expertise level on this topic?",
+                list(EXPERTISE_LEVELS.keys()),
+                horizontal=True,
+            )
 
             with st.form("topic_entry"):
                 prompt = st.text_input(
