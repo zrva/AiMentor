@@ -624,7 +624,7 @@ def get_runtime_profile():
     if gpu_type == "cpu":
         return {
             "gpu_type": gpu_type,
-            "max_tokens": 384,
+            "max_tokens": 1024,
             "temperature": 0.8,
             "top_p": 0.75,
         }
@@ -771,9 +771,9 @@ EXPERTISE_LEVELS = {
 }
 
 SYLLABUS_PROMPT = """
-Start your response with an obscure, mind-bending fact or "aura" fact about {topic} that will completely hook the user. Make it bold (e.g., **Did you know...**).
+Create a learning roadmap for {topic}.
 
-After the hook, create a learning roadmap for {topic}.
+Provide ONLY the syllabus structure containing the core concepts to learn. Do NOT include any introductory hooks, surprising facts, or conversational filler. Start directly with the first section heading.
 
 Format the path with interesting topic-specific headings. You MUST use strict Markdown headers (`### Section Title`) for each main section, and bullet points (`- **Subtopic:**`) for the concepts under them. (Do NOT use generic titles like "Index" or "Table of Contents").
 Ensure the names of subtopics are short and concise (1-4 words max).
@@ -1432,74 +1432,74 @@ def main():
             position: relative; z-index: 2;
         }
 
-        /* ── Free chat message overrides ── */
-        .fc-active [data-testid="stChatMessage"] {
+        /* ── Free chat message overrides (global — Streamlit ignores injected div wrappers) ── */
+        [data-testid="stChatMessage"] {
             border-radius: 18px !important;
             padding: 16px 20px !important;
             margin: 10px 0 !important;
             backdrop-filter: blur(6px) !important;
         }
         /* User bubble — warm amber crystal */
-        .fc-active [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+        [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
             background: linear-gradient(135deg,
-                rgba(201,162,39,0.12),
-                rgba(180,120,20,0.08)) !important;
-            border: 1px solid rgba(201,162,39,0.3) !important;
+                rgba(201,162,39,0.14),
+                rgba(140,90,10,0.09)) !important;
+            border: 1px solid rgba(201,162,39,0.35) !important;
             box-shadow:
-                0 4px 20px rgba(201,162,39,0.12),
+                0 4px 24px rgba(201,162,39,0.14),
                 inset 0 1px 0 rgba(255,220,100,0.08) !important;
         }
         /* Professor bubble — cool violet crystal */
-        .fc-active [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
+        [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
             background: linear-gradient(135deg,
-                rgba(139,92,246,0.12),
-                rgba(6,182,212,0.07)) !important;
-            border: 1px solid rgba(139,92,246,0.28) !important;
+                rgba(139,92,246,0.13),
+                rgba(6,182,212,0.08)) !important;
+            border: 1px solid rgba(139,92,246,0.30) !important;
             box-shadow:
-                0 4px 20px rgba(139,92,246,0.10),
-                inset 0 1px 0 rgba(200,180,255,0.06) !important;
+                0 4px 24px rgba(139,92,246,0.12),
+                inset 0 1px 0 rgba(200,180,255,0.07) !important;
         }
-        /* Avatar orb override — purple to teal for professor */
-        .fc-active [data-testid="chatAvatarIcon-assistant"] {
+        /* Avatar — purple-to-teal conic for professor */
+        [data-testid="chatAvatarIcon-assistant"] {
             background: conic-gradient(from 135deg, #7c3aed, #06b6d4) !important;
-            box-shadow: 0 0 12px rgba(124,58,237,0.4) !important;
+            box-shadow: 0 0 14px rgba(124,58,237,0.45) !important;
         }
-        /* Avatar for user — warm gold */
-        .fc-active [data-testid="chatAvatarIcon-user"] {
-            background: linear-gradient(135deg, #c9a227, #7a5c10) !important;
-            box-shadow: 0 0 10px rgba(201,162,39,0.35) !important;
+        /* Avatar — warm gold for user */
+        [data-testid="chatAvatarIcon-user"] {
+            background: linear-gradient(135deg, #c9a227, #7a5010) !important;
+            box-shadow: 0 0 12px rgba(201,162,39,0.4) !important;
         }
 
         /* Chat input — cosmic edition */
-        .fc-active [data-testid="stChatInput"] {
-            background: rgba(10,8,30,0.92) !important;
-            border: 1px solid rgba(139,92,246,0.35) !important;
+        [data-testid="stChatInput"] {
+            background: rgba(8,6,26,0.95) !important;
+            border: 1px solid rgba(139,92,246,0.38) !important;
             border-radius: 20px !important;
             box-shadow:
-                0 -8px 40px rgba(0,0,0,0.4),
+                0 -8px 40px rgba(0,0,0,0.45),
                 0 0 0 1px rgba(139,92,246,0.08) !important;
         }
-        .fc-active [data-testid="stChatInput"]:focus-within {
-            border-color: rgba(139,92,246,0.65) !important;
+        [data-testid="stChatInput"]:focus-within {
+            border-color: rgba(139,92,246,0.70) !important;
             box-shadow:
                 0 -8px 40px rgba(0,0,0,0.4),
-                0 0 0 3px rgba(139,92,246,0.12),
-                0 0 30px rgba(139,92,246,0.15) !important;
+                0 0 0 3px rgba(139,92,246,0.14),
+                0 0 35px rgba(139,92,246,0.18) !important;
         }
-        .fc-active [data-testid="stChatInput"] textarea {
-            color: #e2e0ff !important;
+        [data-testid="stChatInput"] textarea {
+            color: #e4e0ff !important;
         }
-        .fc-active [data-testid="stChatInput"] textarea::placeholder {
+        [data-testid="stChatInput"] textarea::placeholder {
             color: rgba(139,120,200,0.5) !important;
         }
-        .fc-active [data-testid="stChatInput"] button {
+        [data-testid="stChatInput"] button {
             background: linear-gradient(135deg, #7c3aed, #06b6d4) !important;
             border-radius: 12px !important;
-            box-shadow: 0 2px 12px rgba(124,58,237,0.4) !important;
+            box-shadow: 0 2px 14px rgba(124,58,237,0.45) !important;
         }
-        .fc-active [data-testid="stChatInput"] button:hover {
+        [data-testid="stChatInput"] button:hover {
             background: linear-gradient(135deg, #6d28d9, #0891b2) !important;
-            box-shadow: 0 4px 20px rgba(124,58,237,0.6) !important;
+            box-shadow: 0 4px 22px rgba(124,58,237,0.65) !important;
         }
 
         /* Empty state */
@@ -1601,9 +1601,6 @@ def main():
         if "free_chat_msgs" not in st.session_state:
             st.session_state.free_chat_msgs = []
 
-        # ── Wrap messages in .fc-active for scoped CSS ────────
-        st.markdown("<div class='fc-active'>", unsafe_allow_html=True)
-
         # ── Empty state ───────────────────────────────────────
         if not st.session_state.free_chat_msgs:
             st.markdown(
@@ -1622,7 +1619,7 @@ def main():
                         <span class="fc-topic-pill">Science</span>
                         <span class="fc-topic-pill">Mathematics</span>
                         <span class="fc-topic-pill">Technology</span>
-                        <span class="fc-topic-pill">Art & Culture</span>
+                        <span class="fc-topic-pill">Art &amp; Culture</span>
                         <span class="fc-topic-pill">Ethics</span>
                         <span class="fc-topic-pill">Literature</span>
                     </div>
@@ -1648,15 +1645,12 @@ def main():
                 with st.chat_message("assistant", avatar="🎓"):
                     display_message(msg["content"])
 
-        st.markdown("</div>", unsafe_allow_html=True)  # close .fc-active
-
         # ── Chat input & streaming ────────────────────────────
         is_chat_wait = (
             len(st.session_state.free_chat_msgs) > 0
             and st.session_state.free_chat_msgs[-1]["role"] == "user"
         )
 
-        st.markdown("<div class='fc-active'>", unsafe_allow_html=True)
         if prompt := st.chat_input(
             "What's on your mind? Challenge me…" if not is_chat_wait else "Thinking…",
             disabled=is_chat_wait,
@@ -1684,7 +1678,6 @@ def main():
                     {"role": "assistant", "content": ans}
                 )
                 st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)  # close .fc-active
         return
 
     home_placeholder = st.empty()
@@ -1997,7 +1990,10 @@ def main():
                 is_final_section = current_sect_index >= len(sections) - 1
                 final_instructions = ""
                 if is_final_section:
-                    final_instructions = "\n\nConclude by asking the student a thought-provoking challenge question!"
+                    final_instructions += "\n\nConclude by asking the student a thought-provoking challenge question!"
+                if current_sect_index == 0:
+                    final_instructions += "\n\nCRITICAL: Start your response with an obscure, mind-bending fact or 'aura' fact about the topic that will completely hook the student. Make it bold."
+
 
                 is_initial_teaching = (
                     latest_msg["content"].startswith("Great! Now please teach me")

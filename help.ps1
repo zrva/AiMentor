@@ -16,7 +16,7 @@ if (-not $modelFile) { exit 1 }
 
 # 3. Set GPU params
 if ($GPU_TYPE -eq "cpu") {
-    $NGL = 0; $CTX = 512; $THREADS = 1; $BATCH = 32
+    $NGL = 0; $CTX = 2048; $THREADS = 2; $BATCH = 64
 } else {
     $NGL = 99; $CTX = 4096; $THREADS = 6; $BATCH = 512
 }
@@ -33,7 +33,7 @@ Start-Sleep 5
 
 # 6. Start streamlit
 $streamlitCmd = Join-Path $PSScriptRoot "venv\Scripts\Activate.bat"
-Start-Process "cmd.exe" -ArgumentList "/c", "$streamlitCmd && streamlit run app\main.py" -WindowStyle Hidden -WorkingDirectory $ScriptDir
+Start-Process "cmd.exe" -ArgumentList "/c", "$streamlitCmd && streamlit run app.py" -WindowStyle Hidden -WorkingDirectory $ScriptDir
 
-# 7. Open browser
-Start-Process "http://localhost:8501"
+# 7. Open browser (Streamlit does this automatically)
+# Start-Process "http://localhost:8501"
