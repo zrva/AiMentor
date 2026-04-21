@@ -615,17 +615,17 @@ details pre {
   border: 1px solid var(--border) !important;
   border-radius: 10px !important;
   padding: 10px 4px !important;
-  text-align: center !important;
+  text-align: left !important;
   transition: all 0.18s ease !important;
   cursor: pointer !important;
   display: flex !important;
-  justify-content: center !important;
+  justify-content: flex-start !important;
   align-items: center !important;
 }
 /* Hide the native radio circle element */
 .block-container [data-testid="stRadio"] label div[data-testid="stMarkdownContainer"] {
   width: 100% !important;
-  text-align: center !important;
+  text-align: left !important;
 }
 .block-container [data-testid="stRadio"] label span[data-baseweb="radio"] {
   display: none !important;
