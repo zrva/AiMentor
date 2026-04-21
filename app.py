@@ -609,23 +609,31 @@ details pre {
   gap: 8px !important;
   display: grid !important;
   grid-template-columns: 1fr 1fr 1fr !important;
+  justify-items: start !important;
 }
 .block-container [data-testid="stRadio"] label {
   background: var(--bg-card) !important;
   border: 1px solid var(--border) !important;
   border-radius: 10px !important;
-  padding: 10px 4px !important;
+  padding: 10px 12px !important;
   text-align: left !important;
   transition: all 0.18s ease !important;
   cursor: pointer !important;
   display: flex !important;
   justify-content: flex-start !important;
   align-items: center !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 /* Hide the native radio circle element */
 .block-container [data-testid="stRadio"] label div[data-testid="stMarkdownContainer"] {
   width: 100% !important;
   text-align: left !important;
+  display: block !important;
+}
+.block-container [data-testid="stRadio"] label p {
+  text-align: left !important;
+  margin: 0 !important;
 }
 .block-container [data-testid="stRadio"] label span[data-baseweb="radio"] {
   display: none !important;

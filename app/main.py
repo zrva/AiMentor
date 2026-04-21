@@ -130,25 +130,36 @@ CUSTOM_CSS = """
         background-color: #1E3A5F !important;
     }
     
-    /* Radio buttons */
+    /* Radio buttons - Expertise selector alignment */
     [data-testid="stRadio"] > div {
         display: flex !important;
-        justify-content: space-between !important;
-        gap: 0 !important;
+        justify-content: flex-start !important;
+        gap: 8px !important;
+    }
+    [data-testid="stRadio"] div[role="radiogroup"] {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
     }
     [data-testid="stRadio"] div[role="radiogroup"] > label {
         color: #C9B896 !important;
         flex: 1 1 0 !important;
         text-align: left !important;
         margin: 0 !important;
-        padding: 8px 4px !important;
+        padding: 10px 12px !important;
         min-width: 0 !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
     }
     [data-testid="stRadio"] div[role="radiogroup"] > label span {
         display: block !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        text-align: left !important;
+    }
+    [data-testid="stRadio"] div[role="radiogroup"] > label p {
+        text-align: left !important;
+        margin: 0 !important;
     }
     [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
         background-color: rgba(201, 162, 39, 0.2) !important;
