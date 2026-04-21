@@ -133,10 +133,20 @@ CUSTOM_CSS = """
     /* Radio buttons */
     [data-testid="stRadio"] div[role="radiogroup"] > label {
         color: #C9B896 !important;
+        white-space: nowrap !important;
+    }
+    [data-testid="stRadio"] div[role="radiogroup"] > label span:first-child {
+        white-space: nowrap !important;
+        display: block;
     }
     [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
         background-color: rgba(201, 162, 39, 0.2) !important;
         border-radius: 6px;
+    }
+    [data-testid="stRadio"] div[role="radiogroup"] label input {
+        position: relative !important;
+        z-index: 1 !important;
+        pointer-events: auto !important;
     }
     
     /* Toasts */
@@ -897,7 +907,7 @@ def main():
                     ):
                         restore_free_chat(basename)
                         st.rerun()
-            st.markdown("---")
+            st.divider()
 
         for msg in st.session_state.free_chat_msgs:
             with st.chat_message(msg["role"]):
