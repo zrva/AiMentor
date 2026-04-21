@@ -1251,19 +1251,347 @@ def main():
     )
 
     if app_mode == "💬 Free Chat":
-        # ── Free Chat hero ───────────────────────────────────
-        online_dot = (
-            "<span class='online-dot'></span>" if active_model
-            else "<span style='color:#ef4444;margin-right:5px;'>●</span>"
-        )
-        status_text = f"{online_dot} {active_model}" if active_model else "⚠ Offline"
+        # ══════════════════════════════════════════════════════
+        #   COSMIC FREE CHAT — Artistic UI Layer
+        # ══════════════════════════════════════════════════════
+        st.markdown("""
+        <style>
+        /* ── Nebula canvas background for free chat ── */
+        .fc-universe {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            margin-bottom: 28px;
+            padding: 36px 32px 32px;
+            background:
+                radial-gradient(ellipse at 15% 50%, rgba(139,92,246,0.18) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 20%, rgba(6,182,212,0.14) 0%, transparent 55%),
+                radial-gradient(ellipse at 50% 90%, rgba(201,162,39,0.10) 0%, transparent 55%),
+                linear-gradient(160deg, #05060f 0%, #0d0f2a 50%, #060c1a 100%);
+            border: 1px solid rgba(139,92,246,0.25);
+            box-shadow:
+                0 0 60px rgba(139,92,246,0.08),
+                0 0 120px rgba(6,182,212,0.05),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        /* Animated aurora ribbons */
+        .fc-universe::before {
+            content: '';
+            position: absolute;
+            top: -60%; left: -20%;
+            width: 140%; height: 140%;
+            background: conic-gradient(
+                from 0deg at 50% 50%,
+                transparent 0deg,
+                rgba(139,92,246,0.06) 60deg,
+                transparent 120deg,
+                rgba(6,182,212,0.05) 180deg,
+                transparent 240deg,
+                rgba(201,162,39,0.04) 300deg,
+                transparent 360deg
+            );
+            animation: aurora-spin 18s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes aurora-spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        /* Stars */
+        .fc-universe::after {
+            content: '· · ✦ · · · ✧ · · · · ✦ · · · ✧ · · · · · ✦ · · ✧ · · · · ✦ · ·';
+            position: absolute;
+            top: 8px; left: 0; right: 0;
+            font-size: 9px;
+            color: rgba(255,255,255,0.18);
+            letter-spacing: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: star-drift 30s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes star-drift {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+
+        /* Header content */
+        .fc-title-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            position: relative;
+            z-index: 2;
+        }
+        .fc-orb {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 135deg,
+                #7c3aed, #06b6d4, #c9a227, #7c3aed
+            );
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+            box-shadow:
+                0 0 20px rgba(124,58,237,0.5),
+                0 0 40px rgba(6,182,212,0.25);
+            animation: orb-pulse 4s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        @keyframes orb-pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(124,58,237,0.5), 0 0 40px rgba(6,182,212,0.25); }
+            50%       { box-shadow: 0 0 30px rgba(124,58,237,0.7), 0 0 60px rgba(6,182,212,0.35); }
+        }
+        .fc-title-text h2 {
+            font-family: 'Playfair Display', serif !important;
+            font-size: 1.7rem !important;
+            font-weight: 700 !important;
+            color: #fff !important;
+            margin: 0 0 4px !important;
+            letter-spacing: -0.02em !important;
+            text-shadow: 0 0 30px rgba(139,92,246,0.6) !important;
+        }
+        .fc-title-text p {
+            font-size: 13.5px !important;
+            color: rgba(180,180,210,0.75) !important;
+            margin: 0 !important;
+            font-family: 'Source Sans 3', sans-serif !important;
+        }
+        .fc-status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-family: 'Source Sans 3', sans-serif;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .fc-status-chip.on {
+            background: rgba(74,222,128,0.12);
+            border: 1px solid rgba(74,222,128,0.3);
+            color: #4ade80;
+        }
+        .fc-status-chip.off {
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #ef4444;
+        }
+        .fc-status-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: blink 1.8s ease-in-out infinite;
+        }
+        .fc-status-chip.off .fc-status-dot { background: #ef4444; animation: none; }
+        @keyframes blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        /* Suggestion chips */
+        .fc-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 22px;
+            position: relative;
+            z-index: 2;
+        }
+        .fc-chip {
+            padding: 7px 14px;
+            border-radius: 99px;
+            border: 1px solid rgba(139,92,246,0.3);
+            background: rgba(139,92,246,0.08);
+            font-size: 13px;
+            color: rgba(180,180,220,0.85) !important;
+            font-family: 'Source Sans 3', sans-serif;
+            cursor: default;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .fc-chip:hover {
+            border-color: rgba(139,92,246,0.6);
+            background: rgba(139,92,246,0.15);
+            color: #d4c8ff !important;
+            transform: translateY(-1px);
+        }
+        .fc-divider {
+            height: 1px;
+            margin-top: 22px;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(139,92,246,0.3) 20%,
+                rgba(6,182,212,0.3) 50%,
+                rgba(201,162,39,0.2) 80%,
+                transparent
+            );
+            position: relative; z-index: 2;
+        }
+
+        /* ── Free chat message overrides ── */
+        .fc-active [data-testid="stChatMessage"] {
+            border-radius: 18px !important;
+            padding: 16px 20px !important;
+            margin: 10px 0 !important;
+            backdrop-filter: blur(6px) !important;
+        }
+        /* User bubble — warm amber crystal */
+        .fc-active [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+            background: linear-gradient(135deg,
+                rgba(201,162,39,0.12),
+                rgba(180,120,20,0.08)) !important;
+            border: 1px solid rgba(201,162,39,0.3) !important;
+            box-shadow:
+                0 4px 20px rgba(201,162,39,0.12),
+                inset 0 1px 0 rgba(255,220,100,0.08) !important;
+        }
+        /* Professor bubble — cool violet crystal */
+        .fc-active [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
+            background: linear-gradient(135deg,
+                rgba(139,92,246,0.12),
+                rgba(6,182,212,0.07)) !important;
+            border: 1px solid rgba(139,92,246,0.28) !important;
+            box-shadow:
+                0 4px 20px rgba(139,92,246,0.10),
+                inset 0 1px 0 rgba(200,180,255,0.06) !important;
+        }
+        /* Avatar orb override — purple to teal for professor */
+        .fc-active [data-testid="chatAvatarIcon-assistant"] {
+            background: conic-gradient(from 135deg, #7c3aed, #06b6d4) !important;
+            box-shadow: 0 0 12px rgba(124,58,237,0.4) !important;
+        }
+        /* Avatar for user — warm gold */
+        .fc-active [data-testid="chatAvatarIcon-user"] {
+            background: linear-gradient(135deg, #c9a227, #7a5c10) !important;
+            box-shadow: 0 0 10px rgba(201,162,39,0.35) !important;
+        }
+
+        /* Chat input — cosmic edition */
+        .fc-active [data-testid="stChatInput"] {
+            background: rgba(10,8,30,0.92) !important;
+            border: 1px solid rgba(139,92,246,0.35) !important;
+            border-radius: 20px !important;
+            box-shadow:
+                0 -8px 40px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(139,92,246,0.08) !important;
+        }
+        .fc-active [data-testid="stChatInput"]:focus-within {
+            border-color: rgba(139,92,246,0.65) !important;
+            box-shadow:
+                0 -8px 40px rgba(0,0,0,0.4),
+                0 0 0 3px rgba(139,92,246,0.12),
+                0 0 30px rgba(139,92,246,0.15) !important;
+        }
+        .fc-active [data-testid="stChatInput"] textarea {
+            color: #e2e0ff !important;
+        }
+        .fc-active [data-testid="stChatInput"] textarea::placeholder {
+            color: rgba(139,120,200,0.5) !important;
+        }
+        .fc-active [data-testid="stChatInput"] button {
+            background: linear-gradient(135deg, #7c3aed, #06b6d4) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 12px rgba(124,58,237,0.4) !important;
+        }
+        .fc-active [data-testid="stChatInput"] button:hover {
+            background: linear-gradient(135deg, #6d28d9, #0891b2) !important;
+            box-shadow: 0 4px 20px rgba(124,58,237,0.6) !important;
+        }
+
+        /* Empty state */
+        .fc-empty {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+        }
+        .fc-empty-orb {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background: conic-gradient(from 0deg, #7c3aed22, #06b6d422, #c9a22722, #7c3aed22);
+            border: 1px solid rgba(139,92,246,0.25);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 34px;
+            box-shadow: 0 0 30px rgba(139,92,246,0.15);
+            animation: empty-glow 3s ease-in-out infinite;
+        }
+        @keyframes empty-glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(139,92,246,0.15); }
+            50%       { box-shadow: 0 0 50px rgba(139,92,246,0.3), 0 0 80px rgba(6,182,212,0.1); }
+        }
+        .fc-empty h3 {
+            font-family: 'Playfair Display', serif !important;
+            font-size: 1.3rem !important;
+            color: rgba(220,215,255,0.9) !important;
+            margin: 0 0 8px !important;
+        }
+        .fc-empty p {
+            color: rgba(140,135,175,0.7) !important;
+            font-size: 14px !important;
+            line-height: 1.7 !important;
+            max-width: 340px !important;
+            margin: 0 auto !important;
+        }
+        .fc-topics {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .fc-topic-pill {
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 12.5px;
+            border: 1px solid rgba(139,92,246,0.25);
+            background: rgba(139,92,246,0.07);
+            color: rgba(180,165,255,0.8) !important;
+            font-family: 'Source Sans 3', sans-serif;
+        }
+
+        /* Message counter badge */
+        .fc-counter {
+            text-align: right;
+            font-size: 11px;
+            color: rgba(130,120,170,0.6);
+            font-family: 'Source Sans 3', sans-serif;
+            padding: 0 4px 6px;
+            letter-spacing: 0.03em;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+        # ── Cosmic header ────────────────────────────────────
+        model_display = active_model if active_model else "Offline"
+        chip_cls = "on" if active_model else "off"
+        chip_dot = ""
         st.markdown(
             f"""
-            <div class="chat-hero">
-                <div class="icon">🎓</div>
-                <div>
-                    <h3>Free Chat</h3>
-                    <p>Discuss <em>anything</em> with your AI mentor &nbsp;·&nbsp; {status_text}</p>
+            <div class="fc-universe">
+                <div class="fc-title-row">
+                    <div class="fc-orb">🎓</div>
+                    <div class="fc-title-text">
+                        <h2>The Infinite Classroom</h2>
+                        <p>A space to debate, explore, and discover anything
+                           <span class="fc-status-chip {chip_cls}">
+                               <span class="fc-status-dot"></span>
+                               {model_display}
+                           </span>
+                        </p>
+                    </div>
+                </div>
+                <div class="fc-divider"></div>
+                <div class="fc-suggestions">
+                    <span class="fc-chip">⚛ Quantum Mechanics</span>
+                    <span class="fc-chip">🏛 Ancient Philosophy</span>
+                    <span class="fc-chip">🧬 Evolution</span>
+                    <span class="fc-chip">💻 How Does the Internet Work?</span>
+                    <span class="fc-chip">🌌 The Big Bang</span>
+                    <span class="fc-chip">🎭 Why Does Art Matter?</span>
+                    <span class="fc-chip">🧠 Consciousness</span>
                 </div>
             </div>
             """,
@@ -1273,18 +1601,45 @@ def main():
         if "free_chat_msgs" not in st.session_state:
             st.session_state.free_chat_msgs = []
 
-        # Empty state
+        # ── Wrap messages in .fc-active for scoped CSS ────────
+        st.markdown("<div class='fc-active'>", unsafe_allow_html=True)
+
+        # ── Empty state ───────────────────────────────────────
         if not st.session_state.free_chat_msgs:
             st.markdown(
                 """
-                <div style="text-align:center;padding:2.5rem 1rem;">
-                    <div style="font-size:48px;margin-bottom:16px;opacity:0.5;">💬</div>
-                    <p style="color:#6b7b8c;font-size:15px;">Ask me anything — philosophy, science, code, history…<br>I have strong opinions and love a good debate.</p>
+                <div class="fc-empty">
+                    <div class="fc-empty-orb">✦</div>
+                    <h3>Where shall we wander?</h3>
+                    <p>
+                        I hold strong opinions on everything —<br>
+                        from the philosophy of science to why the Roman Empire
+                        really fell. Ask me anything.
+                    </p>
+                    <div class="fc-topics">
+                        <span class="fc-topic-pill">Philosophy</span>
+                        <span class="fc-topic-pill">History</span>
+                        <span class="fc-topic-pill">Science</span>
+                        <span class="fc-topic-pill">Mathematics</span>
+                        <span class="fc-topic-pill">Technology</span>
+                        <span class="fc-topic-pill">Art & Culture</span>
+                        <span class="fc-topic-pill">Ethics</span>
+                        <span class="fc-topic-pill">Literature</span>
+                    </div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+        else:
+            # Message counter
+            n = len(st.session_state.free_chat_msgs)
+            exchanges = n // 2
+            st.markdown(
+                f"<div class='fc-counter'>{exchanges} exchange{'s' if exchanges != 1 else ''} · {n} messages</div>",
+                unsafe_allow_html=True,
+            )
 
+        # ── Render messages ───────────────────────────────────
         for msg in st.session_state.free_chat_msgs:
             if msg["role"] == "user":
                 with st.chat_message("user", avatar="👤"):
@@ -1293,12 +1648,19 @@ def main():
                 with st.chat_message("assistant", avatar="🎓"):
                     display_message(msg["content"])
 
+        st.markdown("</div>", unsafe_allow_html=True)  # close .fc-active
+
+        # ── Chat input & streaming ────────────────────────────
         is_chat_wait = (
             len(st.session_state.free_chat_msgs) > 0
             and st.session_state.free_chat_msgs[-1]["role"] == "user"
         )
 
-        if prompt := st.chat_input("Ask me anything...", disabled=is_chat_wait):
+        st.markdown("<div class='fc-active'>", unsafe_allow_html=True)
+        if prompt := st.chat_input(
+            "What's on your mind? Challenge me…" if not is_chat_wait else "Thinking…",
+            disabled=is_chat_wait,
+        ):
             st.session_state.free_chat_msgs.append({"role": "user", "content": prompt})
             if len(st.session_state.free_chat_msgs) > 40:
                 st.session_state.free_chat_msgs = st.session_state.free_chat_msgs[-40:]
@@ -1322,6 +1684,7 @@ def main():
                     {"role": "assistant", "content": ans}
                 )
                 st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)  # close .fc-active
         return
 
     home_placeholder = st.empty()
