@@ -954,11 +954,22 @@ def main():
         with home_placeholder.container():
             st.markdown("### What would you like to learn today?")
 
-            expertise_select = st.radio(
-                "What is your current expertise level on this topic?",
-                list(EXPERTISE_LEVELS.keys()),
-                horizontal=True,
-            )
+            st.caption("What is your current expertise level on this topic?")
+            expertise_levels = list(EXPERTISE_LEVELS.keys())
+            if "expertise_select" not in st.session_state:
+                st.session_state.expertise_select = 0
+            cols = st.columns(3)
+            for idx, level in enumerate(expertise_levels):
+                with cols[idx]:
+                    btn_label = level.split(" (")[0]
+                    if st.button(
+                        btn_label,
+                        key=f"exp_{idx}",
+                        use_container_width=True,
+                    ):
+                        st.session_state.expertise_select = idx
+                        st.rerun()
+            expertise_select = expertise_levels[st.session_state.expertise_select]
 
             with st.form("topic_entry"):
                 prompt = st.text_input(
