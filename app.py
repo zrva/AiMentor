@@ -600,7 +600,7 @@ details pre {
 
 </style>
 """
-st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+st.html(CUSTOM_CSS)
 
 WORKSPACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "llm_workspace")
 
@@ -1254,7 +1254,8 @@ def main():
         # ══════════════════════════════════════════════════════
         #   COSMIC FREE CHAT — Artistic UI Layer
         # ══════════════════════════════════════════════════════
-        st.markdown("""
+        # ── Free Chat specific global CSS injection ──────────
+        FREE_CHAT_CSS = """
         <style>
         /* ── Nebula canvas background for free chat ── */
         .fc-universe {
@@ -1562,7 +1563,9 @@ def main():
             letter-spacing: 0.03em;
         }
         </style>
-        """, unsafe_allow_html=True)
+        """
+
+        st.html(FREE_CHAT_CSS)
 
         # ── Cosmic header ────────────────────────────────────
         model_display = active_model if active_model else "Offline"
