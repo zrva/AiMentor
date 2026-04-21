@@ -603,16 +603,64 @@ details pre {
   color: #ef4444;
 }
 
-/* Hide the expertise-level radio—we show custom pills instead */
-div[data-testid="stRadio"]:has(div[role="radiogroup"] label:nth-child(3)) {
+/* ─── NATIVE EXPERTISE PILL SELECTOR ─── */
+/* Transform the main content radio (Expertise) into 3 equal pills */
+.block-container [data-testid="stRadio"] > div {
+  gap: 8px !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+}
+.block-container [data-testid="stRadio"] label {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  padding: 10px 4px !important;
+  text-align: center !important;
+  transition: all 0.18s ease !important;
+  cursor: pointer !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+/* Hide the native radio circle element */
+.block-container [data-testid="stRadio"] label div[data-testid="stMarkdownContainer"] {
+  width: 100% !important;
+  text-align: center !important;
+}
+.block-container [data-testid="stRadio"] label span[data-baseweb="radio"] {
   display: none !important;
 }
-/* Sidebar mode radio—keep visible, fix gap */
+/* Inactive Hover */
+.block-container [data-testid="stRadio"] label:hover {
+  background: rgba(201,162,39,0.07) !important;
+  border-color: rgba(201,162,39,0.25) !important;
+}
+/* Active state */
+.block-container [data-testid="stRadio"] label:has(input:checked) {
+  background: rgba(201,162,39,0.18) !important;
+  border-color: rgba(201,162,39,0.45) !important;
+  color: var(--gold-light) !important;
+  box-shadow: 0 0 14px rgba(201,162,39,0.15) !important;
+}
+.block-container [data-testid="stRadio"] label:has(input:checked) p {
+  color: var(--gold-light) !important;
+  font-weight: 600 !important;
+}
+
+/* Sidebar mode radio—keep vertical list, fix gap */
 [data-testid="stSidebar"] [data-testid="stRadio"] > div {
+  display: flex !important;
+  flex-direction: column !important;
   gap: 6px !important;
 }
-[data-testid="stSidebar"] [data-testid="stRadio"] > div {
-  display: block !important;
+[data-testid="stSidebar"] [data-testid="stRadio"] label {
+  background: transparent !important;
+  border: none !important;
+  padding: 4px 8px !important;
+  justify-content: flex-start !important;
+}
+[data-testid="stSidebar"] [data-testid="stRadio"] label span[data-baseweb="radio"] {
+  display: flex !important;
 }
 /* ─── SIDEBAR LEARNING PATH ────────────────── */
 .sb-label {
@@ -1100,6 +1148,35 @@ def save_progress_checkpoint():
     except Exception:
         st.toast("⚠️ Failed to save progress checkpoint.", icon="⚠️")
 
+def save_freechat_checkpoint():
+    if "free_chat_msgs" not in st.session_state or not st.session_state.free_chat_msgs:
+        return
+        
+    first_msg = next((m["content"] for m in st.session_state.free_chat_msgs if m["role"] == "user"), "chat")
+    safe_title = re.sub(r"[^\w\s-]", "", first_msg[:30]).strip().replace(" ", "_").lower()
+    
+    timestamp = getattr(st.session_state, "_freechat_session_id", int(time.time()))
+    st.session_state._freechat_session_id = timestamp 
+    
+    filepath = os.path.join(WORKSPACE, f"freechat_{timestamp}_{safe_title}.json")
+    try:
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(st.session_state.free_chat_msgs, f, indent=2)
+    except Exception:
+        pass
+
+def restore_freechat_checkpoint(filename):
+    filepath = os.path.join(WORKSPACE, filename)
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            msgs = json.load(f)
+        reset_to_home()
+        st.session_state.free_chat_msgs = msgs
+        
+        parts = filename.replace("freechat_", "").split("_")
+        st.session_state._freechat_session_id = int(parts[0])
+    except Exception as e:
+        st.error(f"Failed to restore chat: {e}")
 
 def restore_progress_checkpoint(filename):
     filepath = os.path.join(WORKSPACE, filename)
@@ -1319,6 +1396,34 @@ def main():
         and st.session_state.messages[-1]["role"] == "user"
     )
 
+        # Sidebar History section for Free Chat
+        st.markdown("<div class='sb-label'>Past Conversations</div>", unsafe_allow_html=True)
+        fc_files = [f for f in os.listdir(WORKSPACE) if f.startswith("freechat_") and f.endswith(".json")]
+        fc_files.sort(reverse=True, key=lambda x: os.path.getmtime(os.path.join(WORKSPACE, x)))
+        
+        if not fc_files:
+            st.markdown(
+                "<p style='font-size:12px;color:#6b7b8c;padding:0 12px;'>"
+                "Start chatting to save history."
+                "</p>",
+                unsafe_allow_html=True,
+            )
+        else:
+            for f in fc_files[:8]:
+                try:
+                    # freechat_TIMESTAMP_title.json
+                    _ts, _title = f.replace("freechat_", "").replace(".json", "").split("_", 1)
+                    date_str = time.strftime('%b %d', time.localtime(int(_ts)))
+                    display_title = _title.replace("_", " ").title()
+                    if len(display_title) > 18:
+                        display_title = display_title[:18] + "…"
+                        
+                    if st.button(f"💬 {display_title} ({date_str})", key=f"res_{f}"):
+                        restore_freechat_checkpoint(f)
+                        st.rerun()
+                except Exception:
+                    pass
+                    
     if app_mode == "💬 Free Chat":
         # ══════════════════════════════════════════════════════
         #   COSMIC FREE CHAT — Artistic UI Layer
@@ -1762,6 +1867,7 @@ def main():
                 st.session_state.free_chat_msgs.append(
                     {"role": "assistant", "content": ans}
                 )
+                save_freechat_checkpoint()
                 st.rerun()
         return
 
@@ -1781,55 +1887,13 @@ def main():
                 unsafe_allow_html=True,
             )
 
-            # ── Expertise selector — 3 equal pills aligned with the form box ──
-            st.html("""
-            <style>
-            /* expertise pill row — full width, 3 equal cells */
-            .exp-row {
-                display: grid;
-                grid-template-columns: 1fr 1fr 1fr;
-                gap: 8px;
-                margin: 0 0 10px 0;
-            }
-            .exp-pill {
-                text-align: center;
-                padding: 10px 4px;
-                border-radius: 10px;
-                border: 1px solid #1f3655;
-                background: #121f38;
-                cursor: pointer;
-                font-family: 'Source Sans 3', sans-serif;
-                font-size: 13px;
-                color: #c9b896;
-                transition: all 0.18s ease;
-                line-height: 1.3;
-                user-select: none;
-            }
-            .exp-pill.active {
-                background: rgba(201,162,39,0.18);
-                border-color: rgba(201,162,39,0.45);
-                color: #d4af37;
-                font-weight: 600;
-                box-shadow: 0 0 14px rgba(201,162,39,0.15);
-            }
-            .exp-pill:hover:not(.active) {
-                border-color: rgba(201,162,39,0.25);
-                background: rgba(201,162,39,0.07);
-            }
-            .exp-label {
-                font-size: 10px;
-                text-transform: uppercase;
-                letter-spacing: 0.12em;
-                color: #6b7b8c;
-                text-align: center;
-                margin-bottom: 8px;
-                font-family: 'Source Sans 3', sans-serif;
-            }
-            </style>
-            """)
+            st.markdown(
+                "<div style='font-size:10px;text-transform:uppercase;letter-spacing:0.12em;"
+                "color:#6b7b8c;text-align:center;margin-bottom:8px;font-family:\"Source Sans 3\",sans-serif;'>"
+                "Select your level</div>",
+                unsafe_allow_html=True,
+            )
             expertise_options = list(EXPERTISE_LEVELS.keys())
-            # short display labels so they fit neatly
-            short_labels = ["Beginner", "Intermediate", "Expert"]
             expertise_select = st.radio(
                 "",
                 expertise_options,
@@ -1837,14 +1901,6 @@ def main():
                 label_visibility="collapsed",
                 key="expertise_radio",
             )
-            # overlay the radio with styled pills via CSS
-            active_idx = expertise_options.index(expertise_select)
-            pills_html = '<div class="exp-label">Select your level</div><div class="exp-row">'
-            for i, lbl in enumerate(short_labels):
-                cls = 'exp-pill active' if i == active_idx else 'exp-pill'
-                pills_html += f'<div class="{cls}">{lbl}</div>'
-            pills_html += '</div>'
-            st.markdown(pills_html, unsafe_allow_html=True)
 
             st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
 
