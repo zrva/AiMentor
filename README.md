@@ -1,4 +1,4 @@
-# <p align="center"><font face="Times New Roman, serif"><b>AiMentor : Premium Offline Academic Tutor</b></font></p>
+# <p align="center"><code>AiMentor : Local / Offline AI Tutor</code></p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Windows-0078D4?style=for-the-badge&logo=windows&logoColor=white" />
