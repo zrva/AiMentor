@@ -11,216 +11,593 @@ import html
 
 st.set_page_config(page_title="AiMentor", page_icon="📚", layout="wide")
 
+# ── Premium Design System ──────────────────────────────────────────────────────
 CUSTOM_CSS = """
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    /* Professor AI Dark Theme - Navy with Gold */
-    
-    /* Main Background - Navy Dark */
-    [data-testid="stAppViewContainer"] {
-        background-color: #0B162C !important;
-    }
-    [data-testid="stHeader"] {
-        background-color: #0D1B2A !important;
-        border-bottom: 1px solid #1E3A5F !important;
-    }
-    [data-testid="stSidebar"] {
-        background-color: #0D1B2A !important;
-        border-right: 1px solid #1E3A5F !important;
-    }
-    
-    /* Sidebar toggle */
-    [data-testid="collapsedControl"] svg, [data-testid="stSidebar"] button svg {
-        color: #E8D5B7 !important;
-        fill: #E8D5B7 !important;
-    }
-    
-    /* Global Text Colors - Cream */
-    h1, h2, h3 {
-        color: #E8D5B7 !important;
-        font-family: 'Playfair Display', 'Georgia', serif !important;
-    }
-    h4, h5, h6 {
-        color: #E8D5B7 !important;
-        font-family: 'Playfair Display', serif !important;
-    }
-    p, li, span, label, div {
-        color: #C9B896 !important;
-    }
-    
-    /* Links - Gold */
-    a {
-        color: #C9A227 !important;
-    }
-    
-    /* Buttons - Gold */
-    [data-testid="stButton"] button {
-        background: linear-gradient(135deg, #C9A227 0%, #B8962F 100%) !important;
-        border: none !important;
-        color: #0B162C !important;
-        border-radius: 8px !important;
-        font-weight: 600 !important;
-        font-family: 'Source Sans 3', sans-serif !important;
-        transition: all 0.2s ease-in-out;
-    }
-    [data-testid="stButton"] button:hover {
-        background: linear-gradient(135deg, #D4AF37 0%, #C9A227 100%) !important;
-        box-shadow: 0 4px 12px rgba(201, 162, 39, 0.3) !important;
-    }
-    [data-testid="stButton"] button:focus {
-        outline: 2px solid #C9A227 !important;
-        outline-offset: 2px;
-    }
-    
-    /* Input Fields */
-    [data-testid="stTextInput"] input, [data-testid="stChatInput"] input, [data-testid="stChatInput"] textarea {
-        background-color: #1E3A5F !important;
-        color: #E8D5B7 !important;
-        border: 1px solid #2D4A6F !important;
-        border-radius: 8px !important;
-        font-family: 'Source Sans 3', sans-serif !important;
-    }
-    [data-testid="stTextInput"] input:focus, [data-testid="stChatInput"] textarea:focus {
-        border-color: #C9A227 !important;
-        box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.2) !important;
-    }
-    [data-testid="stTextInput"] input::placeholder, [data-testid="stChatInput"] input::placeholder, [data-testid="stChatInput"] textarea::placeholder {
-        color: #6B7B8C !important;
-    }
-    
-    /* Thinking Block */
-    details {
-        background-color: #1E3A5F !important;
-        border: 1px solid #2D4A6F !important;
-        padding: 12px;
-        border-radius: 8px;
-    }
-    details summary {
-        color: #C9A227 !important;
-        font-weight: 500;
-        font-family: 'Playfair Display', serif !important;
-    }
-    
-    /* Code blocks */
-    .stCodeBlock > div {
-        background-color: #0D1B2A !important;
-        border: 1px solid #2D4A6F !important;
-        border-radius: 8px;
-    }
-    
-    /* Streamlit dividers */
-    [data-testid="stDivider"] {
-        border-top: 1px solid #2D4A6F !important;
-    }
-    
-    /* Form containers */
-    [data-testid="stForm"] {
-        background-color: #0D1B2A !important;
-        border: 1px solid #1E3A5F !important;
-        border-radius: 12px !important;
-        padding: 24px !important;
-    }
-    
-    /* Progress bar */
-    [data-testid="stProgress"] > div > div {
-        background: linear-gradient(90deg, #C9A227, #D4AF37) !important;
-    }
-    [data-testid="stProgress"] > div {
-        background-color: #1E3A5F !important;
-    }
-    
-    /* Radio buttons */
-    [data-testid="stRadio"] div[role="radiogroup"] > label {
-        color: #C9B896 !important;
-    }
-    [data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
-        background-color: rgba(201, 162, 39, 0.2) !important;
-        border-radius: 6px;
-    }
-    
-    /* Toasts */
-    [data-testid="stToast"] {
-        border-left: 4px solid #C9A227 !important;
-    }
-    
-    /* Streamlit containers - max-width for scaling */
-    .block-container {
-        padding-top: 1.5rem !important;
-        padding-bottom: 1.5rem !important;
-        max-width: 900px !important;
-    }
-    
-    /* Chat message styling - Professor AI style */
-    [data-testid="stChatMessage"] {
-        background-color: #1E3A5F !important;
-        border-radius: 12px !important;
-        padding: 10px 14px !important;
-        margin: 6px 0 !important;
-        max-width: 85% !important;
-        font-family: 'Source Sans 3', sans-serif !important;
-        font-size: 14px !important;
-        line-height: 1.5 !important;
-        color: #E8D5B7 !important;
-    }
-    
-    /* User message - align right with gold tint */
-    [data-testid="stChatMessage"][data-testid="user"] {
-        background-color: rgba(201, 162, 39, 0.12) !important;
-        border: 1px solid rgba(201, 162, 39, 0.2) !important;
-        margin-left: auto !important;
-    }
-    
-    /* Assistant message - align left with navy */
-    [data-testid="stChatMessage"][data-testid="assistant"] {
-        background-color: #1E3A5F !important;
-        border: 1px solid #2D4A6F !important;
-        margin-right: auto !important;
-    }
-    
-    /* Chat input - fixed at bottom */
-    [data-testid="stChatInput"] {
-        background-color: #0D1B2A !important;
-        border: 1px solid #2D4A6F !important;
-        border-radius: 12px !important;
-        padding: 10px 14px !important;
-        box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.25) !important;
-    }
-    [data-testid="stChatInput"]:focus-within {
-        border-color: #C9A227 !important;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(201, 162, 39, 0.15) !important;
-    }
-    
-    /* Chat input text - Source Sans 3 */
-    [data-testid="stChatInput"] input {
-        color: #E8D5B7 !important;
-        font-family: 'Source Sans 3', sans-serif !important;
-        font-size: 15px !important;
-    }
-    [data-testid="stChatInput"] input::placeholder {
-        color: #6B7B8C !important;
-    }
-    
-    /* Send button - gold */
-    [data-testid="stChatInput"] button {
-        background-color: #C9A227 !important;
-        border-radius: 8px !important;
-        padding: 6px 16px !important;
-    }
-    [data-testid="stChatInput"] button:hover {
-        background-color: #D4AF37 !important;
-    }
-    
-    /* Chat scroll area */
-    [data-testid="stVerticalScrollArea"] {
-        scrollbar-width: thin !important;
-        scrollbar-color: #C9A227 #0D1B2A !important;
-    }
-    
-    /* Tabs */
-    [data-testid="stTabs"] button[aria-selected="true"] {
-        color: #C9A227 !important;
-        border-bottom: 2px solid #C9A227 !important;
-    }
+
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS — Navy × Gold palette
+   (mirrors the reference React app's CSS vars)
+═══════════════════════════════════════════ */
+:root {
+  --bg-deep:       #090f1e;
+  --bg-main:       #0d1526;
+  --bg-card:       #121f38;
+  --bg-card-hover: #162540;
+  --border:        #1f3655;
+  --border-glow:   rgba(201,162,39,0.35);
+  --gold:          #c9a227;
+  --gold-light:    #d4af37;
+  --gold-dim:      rgba(201,162,39,0.15);
+  --cream:         #e8d5b7;
+  --cream-muted:   #b5a080;
+  --muted:         #6b7b8c;
+  --text-body:     #c9b896;
+  --radius-sm:     6px;
+  --radius-md:     10px;
+  --radius-lg:     16px;
+  --shadow-card:   0 4px 24px rgba(0,0,0,0.45);
+  --shadow-glow:   0 0 20px rgba(201,162,39,0.18);
+}
+
+/* ─── BASE ─────────────────────────────────── */
+[data-testid="stAppViewContainer"] {
+  background: var(--bg-deep) !important;
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(201,162,39,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 80%, rgba(30,58,95,0.35) 0%, transparent 60%);
+  background-attachment: fixed;
+}
+
+[data-testid="stHeader"] {
+  background: rgba(13,21,38,0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.block-container {
+  padding-top: 2rem !important;
+  padding-bottom: 3rem !important;
+  max-width: 920px !important;
+}
+
+/* hide deploy button & footer */
+#MainMenu, footer, [data-testid="stToolbar"], .stAppDeployButton { display: none !important; }
+
+/* ─── TYPOGRAPHY ───────────────────────────── */
+*, *::before, *::after {
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6,
+[class*="heading"] {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  color: var(--cream) !important;
+  letter-spacing: -0.01em;
+}
+
+p, li, span, label, div {
+  color: var(--text-body) !important;
+}
+
+a { color: var(--gold) !important; }
+
+/* ─── SIDEBAR ──────────────────────────────── */
+[data-testid="stSidebar"] {
+  background: var(--bg-main) !important;
+  border-right: 1px solid var(--border) !important;
+}
+[data-testid="stSidebar"] > div {
+  padding-top: 1.25rem !important;
+}
+
+/* Sidebar collapse toggle icon */
+[data-testid="collapsedControl"] svg,
+[data-testid="stSidebar"] button svg {
+  color: var(--cream-muted) !important;
+  fill: var(--cream-muted) !important;
+}
+
+/* ─── BUTTONS ──────────────────────────────── */
+[data-testid="stButton"] button {
+  background: linear-gradient(135deg, var(--gold) 0%, #a07c18 100%) !important;
+  border: none !important;
+  color: #0a1020 !important;
+  border-radius: var(--radius-md) !important;
+  font-weight: 600 !important;
+  font-family: 'Source Sans 3', sans-serif !important;
+  font-size: 14px !important;
+  letter-spacing: 0.02em !important;
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1) !important;
+  box-shadow: 0 2px 8px rgba(201,162,39,0.20) !important;
+}
+[data-testid="stButton"] button:hover {
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%) !important;
+  box-shadow: 0 6px 20px rgba(201,162,39,0.40) !important;
+  transform: translateY(-1px) !important;
+}
+[data-testid="stButton"] button:active {
+  transform: translateY(0) !important;
+}
+[data-testid="stButton"] button:focus-visible {
+  outline: 2px solid var(--gold) !important;
+  outline-offset: 3px !important;
+}
+
+/* ─── FORMS & TEXT INPUTS ──────────────────── */
+[data-testid="stForm"] {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 28px !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+[data-testid="stTextInput"] > div {
+  background: var(--bg-main) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+[data-testid="stTextInput"] > div:focus-within {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px var(--gold-dim) !important;
+}
+[data-testid="stTextInput"] input {
+  background: transparent !important;
+  color: var(--cream) !important;
+  font-family: 'Source Sans 3', sans-serif !important;
+  font-size: 15px !important;
+}
+[data-testid="stTextInput"] input::placeholder { color: var(--muted) !important; }
+
+/* ─── CHAT INPUT ───────────────────────────── */
+[data-testid="stChatInput"] {
+  background: rgba(18,31,56,0.95) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.35) !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+[data-testid="stChatInput"]:focus-within {
+  border-color: var(--gold) !important;
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.3), 0 0 0 2px var(--gold-dim) !important;
+}
+[data-testid="stChatInput"] textarea {
+  color: var(--cream) !important;
+  font-family: 'Source Sans 3', sans-serif !important;
+  font-size: 15px !important;
+  background: transparent !important;
+}
+[data-testid="stChatInput"] textarea::placeholder { color: var(--muted) !important; }
+[data-testid="stChatInput"] button {
+  background: linear-gradient(135deg, var(--gold), #a07c18) !important;
+  border-radius: var(--radius-sm) !important;
+  transition: all 0.2s !important;
+}
+[data-testid="stChatInput"] button:hover {
+  background: linear-gradient(135deg, var(--gold-light), var(--gold)) !important;
+  box-shadow: 0 2px 12px rgba(201,162,39,0.35) !important;
+}
+
+/* ─── CHAT MESSAGES ────────────────────────── */
+[data-testid="stChatMessage"] {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  margin: 8px 0 !important;
+  font-family: 'Source Sans 3', sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+  color: var(--cream) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25) !important;
+  transition: box-shadow 0.2s !important;
+}
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+  background: rgba(201,162,39,0.08) !important;
+  border-color: rgba(201,162,39,0.22) !important;
+}
+
+/* ─── PROGRESS BAR ─────────────────────────── */
+[data-testid="stProgress"] > div {
+  background: rgba(31,54,85,0.7) !important;
+  border-radius: 99px !important;
+}
+[data-testid="stProgress"] > div > div {
+  background: linear-gradient(90deg, var(--gold), var(--gold-light)) !important;
+  border-radius: 99px !important;
+  box-shadow: 0 0 8px rgba(201,162,39,0.5) !important;
+}
+
+/* ─── RADIO BUTTONS ────────────────────────── */
+[data-testid="stRadio"] label {
+  color: var(--text-body) !important;
+  border-radius: var(--radius-md) !important;
+  transition: background 0.15s !important;
+}
+[data-testid="stRadio"] label:hover {
+  background: rgba(201,162,39,0.07) !important;
+}
+[data-testid="stRadio"] label:has(input:checked) {
+  background: rgba(201,162,39,0.18) !important;
+  color: var(--cream) !important;
+}
+
+/* ─── DETAILS / THINKING BLOCK ─────────────── */
+details {
+  background: rgba(18,31,56,0.8) !important;
+  border: 1px solid var(--border) !important;
+  border-left: 3px solid var(--gold) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 12px 16px !important;
+  margin: 8px 0 !important;
+}
+details > summary {
+  color: var(--gold) !important;
+  font-family: 'Source Sans 3', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  user-select: none !important;
+}
+details[open] > summary { margin-bottom: 10px; }
+details pre {
+  background: var(--bg-deep) !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--muted) !important;
+  font-size: 12px !important;
+  padding: 10px !important;
+  overflow-x: auto !important;
+}
+
+/* ─── CODE BLOCKS ──────────────────────────── */
+.stCodeBlock > div {
+  background: var(--bg-deep) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+/* ─── DIVIDER ──────────────────────────────── */
+[data-testid="stDivider"] hr {
+  border-color: var(--border) !important;
+}
+
+/* ─── TOAST ────────────────────────────────── */
+[data-testid="stToast"] {
+  background: var(--bg-card) !important;
+  border-left: 4px solid var(--gold) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--cream) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+/* ─── SCROLLBAR ────────────────────────────── */
+* { scrollbar-width: thin; scrollbar-color: #2a4060 var(--bg-deep); }
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: var(--bg-deep); }
+*::-webkit-scrollbar-thumb { background: #2a4060; border-radius: 3px; }
+*::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ─── INFO / WARNING / SUCCESS BOXES ───────── */
+[data-testid="stAlert"] {
+  background: var(--bg-card) !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ─── SELECT BOX / DROPDOWN ────────────────── */
+[data-testid="stSelectbox"] > div {
+  background: var(--bg-main) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--cream) !important;
+}
+
+/* ─── CAPTION / SMALL TEXT ─────────────────── */
+[data-testid="stCaptionContainer"] p {
+  color: var(--muted) !important;
+  font-size: 12px !important;
+}
+
+/* ─── CUSTOM COMPONENT CLASSES ─────────────── */
+
+/* Hero header */
+.mentor-hero {
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+  position: relative;
+}
+.mentor-hero .hero-icon {
+  font-size: 52px;
+  line-height: 1;
+  filter: drop-shadow(0 0 20px rgba(201,162,39,0.5));
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+.mentor-hero h1 {
+  font-family: 'Playfair Display', Georgia, serif !important;
+  font-size: 2.6rem !important;
+  font-weight: 700 !important;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  margin: 0.5rem 0 !important;
+  letter-spacing: -0.02em !important;
+}
+.mentor-hero p {
+  color: var(--cream-muted) !important;
+  font-size: 1.05rem !important;
+  font-family: 'Source Sans 3', sans-serif !important;
+  margin-top: 0.4rem !important;
+}
+
+/* Section badge (phase header) */
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, rgba(201,162,39,0.10), rgba(201,162,39,0.04));
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.5rem;
+}
+.phase-header .phase-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.phase-header h3 {
+  margin: 0 !important;
+  font-family: 'Playfair Display', serif !important;
+  font-size: 1.25rem !important;
+  color: var(--cream) !important;
+}
+.phase-header p {
+  margin: 2px 0 0 !important;
+  font-size: 13px !important;
+  color: var(--muted) !important;
+}
+
+/* Resume topic card */
+.topic-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.topic-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.22s;
+}
+.topic-card:hover::before { opacity: 1; }
+.topic-card:hover {
+  border-color: rgba(201,162,39,0.4);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), var(--shadow-glow);
+  transform: translateY(-2px);
+}
+.topic-card h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: var(--cream) !important;
+  margin: 0 0 6px !important;
+}
+.topic-card .meta {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: 'Source Sans 3', sans-serif;
+}
+.topic-card .progress-track {
+  height: 3px;
+  background: var(--border);
+  border-radius: 99px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.topic-card .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 99px;
+  box-shadow: 0 0 6px rgba(201,162,39,0.6);
+}
+
+/* Mode selector cards */
+.mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mode-pill.active {
+  background: var(--gold-dim);
+  border-color: rgba(201,162,39,0.4);
+  color: var(--gold);
+}
+
+/* Sidebar section item */
+.sb-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  margin: 2px 0;
+  transition: background 0.15s;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.4;
+  cursor: default;
+}
+.sb-section .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.sb-section.completed .dot { background: var(--gold); }
+.sb-section.current   .dot { background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.6); }
+.sb-section.locked    .dot { background: var(--border); }
+.sb-section.completed { color: var(--cream-muted) !important; }
+.sb-section.current   { color: var(--cream) !important; background: rgba(201,162,39,0.06); }
+.sb-section.locked    { color: var(--muted) !important; }
+
+/* Sidebar label */
+.sb-label {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  padding: 4px 12px;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+/* Teaching progress bar (inline) */
+.teach-progress {
+  background: rgba(31,54,85,0.5);
+  border-radius: 99px;
+  height: 4px;
+  overflow: hidden;
+  margin: 6px 0 14px;
+}
+.teach-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+/* Free chat mode header */
+.chat-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(18,31,56,0.9), rgba(13,21,38,0.7));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-card);
+}
+.chat-hero .icon { font-size: 36px; }
+.chat-hero h3 {
+  margin: 0 !important;
+  font-family: 'Playfair Display', serif !important;
+  font-size: 1.3rem !important;
+  color: var(--cream) !important;
+}
+.chat-hero p {
+  margin: 3px 0 0 !important;
+  font-size: 13px !important;
+  color: var(--muted) !important;
+}
+.online-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74,222,128,0.7);
+  margin-right: 5px;
+  vertical-align: middle;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.8); }
+}
+
+/* Section teaching header */
+.teach-header {
+  padding: 20px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-card);
+}
+.teach-header .section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.teach-header h2 {
+  margin: 0 !important;
+  font-family: 'Playfair Display', serif !important;
+  color: var(--cream) !important;
+  font-size: 1.5rem !important;
+}
+
+/* Doubt counter badge */
+.doubt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  background: rgba(201,162,39,0.12);
+  border: 1px solid rgba(201,162,39,0.25);
+  border-radius: 99px;
+  font-size: 12px;
+  color: var(--gold);
+  font-family: 'Source Sans 3', sans-serif;
+  margin-bottom: 8px;
+}
+
+/* Status pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 500;
+}
+.status-pill.online {
+  background: rgba(74,222,128,0.12);
+  border: 1px solid rgba(74,222,128,0.3);
+  color: #4ade80;
+}
+.status-pill.offline {
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #ef4444;
+}
+
+/* Expertise pill selector */
+[data-testid="stRadio"] > div {
+  gap: 8px !important;
+}
+
 </style>
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
@@ -730,51 +1107,6 @@ def restore_progress_checkpoint(filename):
 
 
 def main():
-    st.markdown(
-        """
-        <style>
-            .reportview-container {
-                margin-top: -2em;
-            }
-            #MainMenu {visibility: hidden;}
-            .stAppDeployButton {display:none;}
-            footer {visibility: hidden;}
-            #stDecoration {display:none;}
-
-            /* Input Fields - Light Theme */
-            div[data-baseweb="input"] > div {
-                border: 1px solid #E5E5E5 !important;
-                background-color: #FFFFFF !important;
-                border-radius: 8px !important;
-            }
-            div[data-baseweb="input"] > div:focus-within {
-                border-color: #D4AF37 !important;
-                box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1) !important;
-            }
-            
-            /* Chat Input Bar */
-            [data-testid="stChatInput"] {
-                border: 1px solid #2D4A6F !important;
-                background-color: #1E3A5F !important;
-                border-radius: 8px !important;
-            }
-            [data-testid="stChatInput"]:focus-within {
-                border-color: #C9A227 !important;
-                box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.2) !important;
-            }
-            
-            /* Form Container */
-            [data-testid="stForm"] {
-                background-color: #0D1B2A !important;
-                border: 1px solid #1E3A5F !important;
-                border-radius: 12px !important;
-                padding: 24px !important;
-            }
-        </style>
-    """,
-        unsafe_allow_html=True,
-    )
-
     # Re-check model status every 30 seconds
     now = time.time()
     last_check = st.session_state.get("_model_check_time", 0)
@@ -786,23 +1118,56 @@ def main():
         active_model = st.session_state["_cached_model_name"]
     runtime_profile = get_runtime_profile()
 
-    st.title("🤖 AiMentor")
-    st.caption(
-        f"Active Workspace: {WORKSPACE} | Model Engine: {active_model if active_model else 'Offline'}"
-    )
-
     if "phase" not in st.session_state:
         reset_to_home()
 
+    # ── Model offline warning ────────────────────────────────
     if not active_model:
-        st.warning(
-            f"⚠️ **AI Engine Offline:** Please boot your AI Backend (e.g. `llama-server`) on port {SERVER_PORT} to connect!"
+        st.markdown(
+            f"""
+            <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);
+                        border-radius:12px;padding:16px 20px;margin-bottom:20px;">
+                <span style="font-size:18px;">⚠️</span>
+                <strong style="color:#fca5a5;font-family:'Playfair Display',serif;"> AI Engine Offline</strong>
+                <p style="margin:6px 0 0;color:#9ca3af;font-size:14px;">
+                    Please boot your AI Backend on port <code style="color:#c9a227;">{SERVER_PORT}</code>
+                    to connect.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
 
     with st.sidebar:
-        st.header("Settings")
+        # ── Sidebar Header ─────────────────────────────────
+        model_label = active_model if active_model else "Offline"
+        status_cls  = "online" if active_model else "offline"
+        status_dot  = "🟢" if active_model else "🔴"
+        st.markdown(
+            f"""
+            <div style="padding:0 4px 16px;">
+                <div style="font-family:'Playfair Display',serif;font-size:1.15rem;
+                            font-weight:700;color:#e8d5b7;margin-bottom:4px;">
+                    🎓 AiMentor
+                </div>
+                <div style="font-size:11px;color:#6b7b8c;font-family:'Source Sans 3',sans-serif;">
+                    {status_dot} {model_label}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Mode selector
+        st.markdown(
+            "<p style='font-size:10px;text-transform:uppercase;letter-spacing:.12em;"
+            "color:#6b7b8c;margin-bottom:6px;'>Mode</p>",
+            unsafe_allow_html=True,
+        )
         app_mode = st.radio(
-            "Application Mode", ["📚 Structured Course", "💬 Free Chat"]
+            "",
+            ["📚 Structured Course", "💬 Free Chat"],
+            label_visibility="collapsed",
         )
 
         # Fixed reasoning boundaries tuned to the selected runtime profile
@@ -811,43 +1176,76 @@ def main():
         top_p = runtime_profile["top_p"]
 
         if runtime_profile["gpu_type"] == "cpu":
-            st.caption(
-                "CPU mode: reduced output budget for lower memory use and faster replies."
+            st.markdown(
+                "<p style='font-size:11px;color:#6b7b8c;margin-top:4px;'>"
+                "CPU mode — reduced token budget."
+                "</p>",
+                unsafe_allow_html=True,
             )
 
-        if st.button("🏠 Home / Clear Chat", use_container_width=True):
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+        if st.button("⌂  Home / Reset", use_container_width=True):
             reset_to_home()
             if "free_chat_msgs" in st.session_state:
                 st.session_state.free_chat_msgs = []
             st.rerun()
 
         st.divider()
+
         if app_mode == "📚 Structured Course":
-            st.subheader("🗺️ Learning Path")
+            # ── Learning path sidebar ──────────────────────
+            st.markdown(
+                "<div class='sb-label'>Learning Path</div>",
+                unsafe_allow_html=True,
+            )
 
             if (
                 "syllabus_parsed" not in st.session_state
                 or not st.session_state.syllabus_parsed
             ):
-                st.caption("Your path will appear here once the syllabus generates.")
+                st.markdown(
+                    "<p style='font-size:12px;color:#6b7b8c;padding:0 12px;'>"
+                    "Your path will appear once the syllabus generates."
+                    "</p>",
+                    unsafe_allow_html=True,
+                )
             else:
                 _, clean_text = extract_thinking(st.session_state.syllabus_raw)
                 structure = parse_syllabus_structure(clean_text)
+                total_secs = len(structure)
+                done_secs  = st.session_state.current_section
+                pct = int((done_secs / max(total_secs, 1)) * 100)
 
+                st.markdown(
+                    f"""
+                    <div style='padding:0 12px 12px;'>
+                      <div style='display:flex;justify-content:space-between;
+                                  font-size:11px;color:#6b7b8c;margin-bottom:4px;'>
+                        <span>{done_secs}/{total_secs} sections</span>
+                        <span>{pct}%</span>
+                      </div>
+                      <div class='teach-progress'>
+                        <div class='teach-progress-fill' style='width:{pct}%'></div>
+                      </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                items_html = ""
                 for i, sect_dict in enumerate(structure):
                     is_completed = i < st.session_state.current_section
-                    is_current = i == st.session_state.current_section
-
-                    if is_completed:
-                        st.markdown(f"**✅ {sect_dict['title']}**")
-                        for sub in sect_dict["subtopics"]:
-                            st.caption(f"&nbsp;&nbsp;✓ {sub}", unsafe_allow_html=True)
-                    elif is_current:
-                        st.markdown(f"**🟢 {sect_dict['title']}**")
-                        for sub in sect_dict["subtopics"]:
-                            st.caption(f"&nbsp;&nbsp;▶ {sub}", unsafe_allow_html=True)
-                    else:
-                        st.markdown(f"**🔒 ~{sect_dict['title']}~**")
+                    is_current   = i == st.session_state.current_section
+                    cls = "completed" if is_completed else ("current" if is_current else "locked")
+                    icon = "✓" if is_completed else ("▶" if is_current else "")
+                    title_html = f"{icon} {sect_dict['title']}" if icon else sect_dict['title']
+                    items_html += (
+                        f"<div class='sb-section {cls}'>"
+                        f"  <div class='dot'></div>"
+                        f"  <span>{title_html}</span>"
+                        f"</div>"
+                    )
+                st.markdown(items_html, unsafe_allow_html=True)
 
     # Flow Control
     is_waiting_for_model = (
@@ -856,52 +1254,64 @@ def main():
     )
 
     if app_mode == "💬 Free Chat":
-        # Free Chat header - Playfair Display for headings, Source Sans 3 for body
+        # ── Free Chat hero ───────────────────────────────────
+        online_dot = (
+            "<span class='online-dot'></span>" if active_model
+            else "<span style='color:#ef4444;margin-right:5px;'>●</span>"
+        )
+        status_text = f"{online_dot} {active_model}" if active_model else "⚠ Offline"
         st.markdown(
-            """
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-                <span style="font-size: 28px;">🎓</span>
+            f"""
+            <div class="chat-hero">
+                <div class="icon">🎓</div>
                 <div>
-                    <h3 style="margin: 0; color: #E8D5B7; font-family: 'Playfair Display', Georgia, serif; font-size: 20px;">Free Chat</h3>
-                    <p style="margin: 2px 0 0 0; color: #8B9BAB; font-family: 'Source Sans 3', sans-serif; font-size: 13px;">Discuss anything with your AI mentor</p>
+                    <h3>Free Chat</h3>
+                    <p>Discuss <em>anything</em> with your AI mentor &nbsp;·&nbsp; {status_text}</p>
                 </div>
             </div>
-        """,
+            """,
             unsafe_allow_html=True,
         )
 
         if "free_chat_msgs" not in st.session_state:
             st.session_state.free_chat_msgs = []
 
-        # Chat container with better spacing
-        with st.container():
-            for msg in st.session_state.free_chat_msgs:
-                if msg["role"] == "user":
-                    with st.chat_message("user", avatar="👤"):
-                        st.markdown(msg["content"])
-                else:
-                    with st.chat_message("assistant", avatar="🎓"):
-                        display_message(msg["content"])
+        # Empty state
+        if not st.session_state.free_chat_msgs:
+            st.markdown(
+                """
+                <div style="text-align:center;padding:2.5rem 1rem;">
+                    <div style="font-size:48px;margin-bottom:16px;opacity:0.5;">💬</div>
+                    <p style="color:#6b7b8c;font-size:15px;">Ask me anything — philosophy, science, code, history…<br>I have strong opinions and love a good debate.</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-        st.divider()
+        for msg in st.session_state.free_chat_msgs:
+            if msg["role"] == "user":
+                with st.chat_message("user", avatar="👤"):
+                    st.markdown(msg["content"])
+            else:
+                with st.chat_message("assistant", avatar="🎓"):
+                    display_message(msg["content"])
 
         is_chat_wait = (
             len(st.session_state.free_chat_msgs) > 0
             and st.session_state.free_chat_msgs[-1]["role"] == "user"
         )
 
-        if prompt := st.chat_input("Type your message...", disabled=is_chat_wait):
+        if prompt := st.chat_input("Ask me anything...", disabled=is_chat_wait):
             st.session_state.free_chat_msgs.append({"role": "user", "content": prompt})
-            # Cap free chat history to prevent unbounded growth
             if len(st.session_state.free_chat_msgs) > 40:
                 st.session_state.free_chat_msgs = st.session_state.free_chat_msgs[-40:]
             st.rerun()
 
         if is_chat_wait:
-            with st.chat_message("assistant"):
+            with st.chat_message("assistant", avatar="🎓"):
                 sys_tmp = (
                     PROFESSOR_PERSONALITY
-                    + "\n\nStrong opinions - share them freely. Don't be neutral."
+                    + "\n\nStrong opinions — share them freely. Don't be neutral."
                 )
                 gen = generate_response_stream(
                     st.session_state.free_chat_msgs,
@@ -920,50 +1330,65 @@ def main():
     home_placeholder = st.empty()
     if st.session_state.phase == "home":
         with home_placeholder.container():
-            st.markdown("### What would you like to learn today?")
-
-            expertise_select = st.radio(
-                "What is your current expertise level on this topic?",
-                list(EXPERTISE_LEVELS.keys()),
-                horizontal=True,
+            # ── Hero ─────────────────────────────────────────
+            st.markdown(
+                """
+                <div class="mentor-hero">
+                    <div class="hero-icon">🎓</div>
+                    <h1>AiMentor</h1>
+                    <p>Your personal guide through any subject.<br>
+                       Learn at your own pace — section by section.</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
             )
 
+            # ── Expertise selector ────────────────────────────
+            st.markdown(
+                "<p style='font-size:13px;color:#6b7b8c;text-align:center;"
+                "margin-bottom:6px;'>Select your expertise level</p>",
+                unsafe_allow_html=True,
+            )
+            expertise_select = st.radio(
+                "",
+                list(EXPERTISE_LEVELS.keys()),
+                horizontal=True,
+                label_visibility="collapsed",
+            )
+
+            st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+
+            # ── Topic form ────────────────────────────────────
             with st.form("topic_entry"):
+                st.markdown(
+                    "<label style='font-family:Playfair Display,serif;"
+                    "font-size:1.1rem;color:#e8d5b7;display:block;margin-bottom:10px;'>"
+                    "What would you like to learn?"
+                    "</label>",
+                    unsafe_allow_html=True,
+                )
                 prompt = st.text_input(
-                    "Enter a topic (e.g., Quantum Computing, Python Web Scraping)..."
+                    "",
+                    placeholder='e.g. "Quantum Computing", "The Roman Empire", "Python Web Scraping"…',
+                    label_visibility="collapsed",
                 )
                 submitted = st.form_submit_button(
-                    "Start Learning", use_container_width=True
+                    "✦  Start Learning", use_container_width=True
                 )
                 if submitted and prompt:
-                    # Guard: detect greetings / chitchat instead of real topics
                     greeting_patterns = [
-                        "hi",
-                        "hello",
-                        "hey",
-                        "hii",
-                        "hiii",
-                        "yo",
-                        "sup",
-                        "who are you",
-                        "what are you",
-                        "how are you",
-                        "whats up",
-                        "what's up",
-                        "good morning",
-                        "good evening",
-                        "good night",
-                        "thanks",
-                        "thank you",
-                        "bye",
-                        "goodbye",
+                        "hi", "hello", "hey", "hii", "hiii", "yo", "sup",
+                        "who are you", "what are you", "how are you",
+                        "whats up", "what's up", "good morning",
+                        "good evening", "good night", "thanks", "thank you",
+                        "bye", "goodbye",
                     ]
                     cleaned = prompt.strip().lower().rstrip("!?.,")
                     if cleaned in greeting_patterns:
                         st.warning(
                             "👋 That looks like a greeting! Switch to **💬 Free Chat** "
-                            "mode in the sidebar to have open conversations. "
-                            "Please enter a valid topic you'd like to explore and learn."
+                            "mode in the sidebar for open conversations. "
+                            "Please enter a real topic to explore."
                         )
                     else:
                         home_placeholder.empty()
@@ -975,12 +1400,23 @@ def main():
                         ]
                         st.rerun()
 
+            # ── Resume saved topics ───────────────────────────
             checkpoints = glob.glob(os.path.join(WORKSPACE, "syllabus_*.md"))
             if checkpoints:
-                st.markdown("### Continue from where you left off:")
+                st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
+                st.markdown(
+                    """
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+                        <div style="height:1px;flex:1;background:rgba(31,54,85,0.8);"></div>
+                        <span style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;
+                                     color:#6b7b8c;white-space:nowrap;">Resume a Topic</span>
+                        <div style="height:1px;flex:1;background:rgba(31,54,85,0.8);"></div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-                # Display responsive grid layout for resume buttons
-                cols = st.columns(3)
+                cols = st.columns(min(len(checkpoints), 3))
                 for idx, ckpt in enumerate(checkpoints):
                     basename = os.path.basename(ckpt)
                     title_guess = (
@@ -989,10 +1425,18 @@ def main():
                         .replace("_", " ")
                         .title()
                     )
-
                     with cols[idx % 3]:
+                        st.markdown(
+                            f"""
+                            <div class="topic-card">
+                                <h4>📖 {title_guess}</h4>
+                                <div class="meta">Saved progress</div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
                         if st.button(
-                            f"🔄 Resume: {title_guess}",
+                            "Resume →",
                             key=ckpt,
                             use_container_width=True,
                         ):
@@ -1001,8 +1445,19 @@ def main():
                             st.rerun()
 
     elif st.session_state.phase == "generating_syllabus":
-        st.markdown(f"### Generating syllabus for: **{st.session_state.topic}**")
-        with st.chat_message("user"):
+        st.markdown(
+            f"""
+            <div class="phase-header">
+                <div class="phase-icon">⚗️</div>
+                <div>
+                    <h3>Building your learning path…</h3>
+                    <p>{html.escape(st.session_state.topic)}</p>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        with st.chat_message("user", avatar="👤"):
             st.markdown(st.session_state.topic)
 
         with st.chat_message("assistant"):
@@ -1030,17 +1485,29 @@ def main():
         st.rerun()
 
     elif st.session_state.phase == "syllabus_review":
-        st.markdown(f"### Syllabus: **{st.session_state.topic}**")
-        with st.chat_message("user"):
+        st.markdown(
+            f"""
+            <div class="phase-header">
+                <div class="phase-icon">📋</div>
+                <div>
+                    <h3>Your Learning Path</h3>
+                    <p>Review your syllabus for <em>{html.escape(st.session_state.topic)}</em></p>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        with st.chat_message("user", avatar="👤"):
             st.markdown(st.session_state.topic)
 
-        with st.chat_message("assistant"):
+        with st.chat_message("assistant", avatar="🎓"):
             display_message(st.session_state.syllabus_raw)
 
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
         col1, col2, col3 = st.columns(3)
         with col1:
             if st.button(
-                "🖊️ Edit", use_container_width=True, disabled=is_waiting_for_model
+                "✏️  Edit Syllabus", use_container_width=True, disabled=is_waiting_for_model
             ):
                 st.session_state.phase = "editing_syllabus"
                 st.rerun()
@@ -1051,7 +1518,7 @@ def main():
                 else "Section 1"
             )
             if st.button(
-                f"▶️ Continue ({first_sect})",
+                f"▶  Begin: {first_sect[:28]}…" if len(first_sect) > 28 else f"▶  Begin: {first_sect}",
                 use_container_width=True,
                 disabled=is_waiting_for_model,
             ):
@@ -1065,16 +1532,27 @@ def main():
                 )
                 st.rerun()
         with col3:
-            if st.button("🗑️ Clear Input", use_container_width=True):
+            if st.button("✕  Start Over", use_container_width=True):
                 reset_to_home()
                 st.rerun()
 
     elif st.session_state.phase == "editing_syllabus":
-        st.markdown(f"### Syllabus: **{st.session_state.topic}**")
-        with st.chat_message("assistant"):
+        st.markdown(
+            f"""
+            <div class="phase-header">
+                <div class="phase-icon">✏️</div>
+                <div>
+                    <h3>Edit Syllabus</h3>
+                    <p>{html.escape(st.session_state.topic)} — tell me what to change</p>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        with st.chat_message("assistant", avatar="🎓"):
             display_message(st.session_state.syllabus_raw)
 
-        if edit_prompt := st.chat_input("Tell me what to add or remove..."):
+        if edit_prompt := st.chat_input("Tell me what to add, remove, or change…"):
             st.session_state.messages.append({"role": "user", "content": edit_prompt})
 
             with st.chat_message("user"):
@@ -1114,10 +1592,28 @@ def main():
             else f"Section {current_sect_index + 1}"
         )
 
-        st.markdown(f"### Teaching: {current_sect}")
+        total_sects  = len(sections)
+        pct_complete = int(((current_sect_index) / max(total_sects, 1)) * 100)
+
+        # ── Teaching header ──────────────────────────────────
+        st.markdown(
+            f"""
+            <div class="teach-header">
+                <div class="section-label">📚 {st.session_state.topic} &nbsp;·&nbsp;
+                    Section {current_sect_index + 1} of {total_sects}
+                </div>
+                <h2>{html.escape(current_sect)}</h2>
+                <div class="teach-progress" style="margin-top:14px;">
+                    <div class="teach-progress-fill" style="width:{pct_complete}%"></div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
         for idx, msg in enumerate(st.session_state.messages):
-            with st.chat_message(msg["role"]):
+            avatar = "👤" if msg["role"] == "user" else "🎓"
+            with st.chat_message(msg["role"], avatar=avatar):
                 if msg["role"] == "assistant":
                     display_message(msg["content"])
                 else:
@@ -1215,7 +1711,22 @@ def main():
             if current_sect_index < len(sections) - 1:
                 next_sect = sections[current_sect_index + 1]
 
-                if st.button(f"▶️ Next Section: {next_sect}", use_container_width=True):
+                # Doubt counter
+                doubts_remaining = 3 - st.session_state.doubts_asked
+                st.markdown(
+                    f"""
+                    <div style="display:flex;align-items:center;justify-content:space-between;
+                                margin-bottom:12px;">
+                        <div class="doubt-badge">💬 {doubts_remaining} doubt{'s' if doubts_remaining!=1 else ''} remaining</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                if st.button(
+                    f"Next Section: {next_sect[:40]}{'…' if len(next_sect)>40 else ''}  →",
+                    use_container_width=True,
+                ):
                     if current_sect not in st.session_state.completed_sections:
                         st.session_state.completed_sections.append(current_sect)
                     save_progress_checkpoint()
@@ -1231,7 +1742,7 @@ def main():
 
                 if st.session_state.doubts_asked < 3:
                     if doubt := st.chat_input(
-                        f"Type your doubt ({st.session_state.doubts_asked}/3 used)..."
+                        f"Ask a doubt about '{current_sect[:30]}' ({st.session_state.doubts_asked}/3 used)…"
                     ):
                         st.session_state.doubts_asked += 1
                         st.session_state.messages.append(
@@ -1239,15 +1750,35 @@ def main():
                         )
                         st.rerun()
                 else:
-                    st.info(
-                        "⚠️ You've reached the 3-doubt limit for this section! Please proceed to the next section to continue your path."
+                    st.markdown(
+                        """
+                        <div style="background:rgba(201,162,39,0.08);border:1px solid rgba(201,162,39,0.2);
+                                    border-radius:10px;padding:14px 18px;text-align:center;">
+                            <span style="font-size:15px;color:#c9a227;">💡 You've used all 3 doubts for this section.</span><br>
+                            <span style="font-size:13px;color:#6b7b8c;">Proceed to the next section to continue your journey.</span>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
                     )
             else:
                 if current_sect not in st.session_state.completed_sections:
                     st.session_state.completed_sections.append(current_sect)
                 save_progress_checkpoint()
-                st.success("Course Completed!")
-                if doubt := st.chat_input("Type your final doubts here..."):
+                st.markdown(
+                    """
+                    <div style="text-align:center;padding:2rem 1rem;
+                                background:linear-gradient(135deg,rgba(201,162,39,0.08),rgba(201,162,39,0.02));
+                                border:1px solid rgba(201,162,39,0.2);border-radius:16px;margin-top:16px;">
+                        <div style="font-size:52px;margin-bottom:12px;">🎓</div>
+                        <h3 style="font-family:'Playfair Display',serif;color:#e8d5b7;
+                                   font-size:1.6rem;margin:0 0 8px;">Course Complete!</h3>
+                        <p style="color:#6b7b8c;font-size:14px;max-width:340px;margin:0 auto;">You've finished every section.
+                            Feel free to ask any remaining questions below.</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                if doubt := st.chat_input("Any final questions?…"):
                     st.session_state.messages.append({"role": "user", "content": doubt})
                     st.rerun()
 
