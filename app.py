@@ -125,44 +125,39 @@ a { color: var(--gold) !important; }
 }
 
 /* ─── SYLLABUS REVIEW — 3-BUTTON SEMANTIC COLORS ─ */
-/* Edit Syllabus — cool slate */
-[data-testid="stButton"]:has(button[kind="secondary"]:not([disabled])) button,
-button[data-testid*="edit"] {
-  background: transparent !important;
-}
-/* We target the buttons by their label text via nth-of-type inside the col layout */
+/* We target the buttons inside the stHorizontalBlock (columns) */
 /* Col-1: Edit  →  slate blue */
-.block-container [data-testid="column"]:nth-child(1) [data-testid="stButton"] button {
+[data-testid="stHorizontalBlock"] > div:nth-child(1) [data-testid="stButton"] button {
   background: linear-gradient(135deg, #334d6e 0%, #243a55 100%) !important;
   color: #a8c4e0 !important;
   border: 1px solid rgba(100,150,200,0.3) !important;
   box-shadow: 0 2px 8px rgba(30,60,100,0.35) !important;
 }
-.block-container [data-testid="column"]:nth-child(1) [data-testid="stButton"] button:hover {
+[data-testid="stHorizontalBlock"] > div:nth-child(1) [data-testid="stButton"] button:hover {
   background: linear-gradient(135deg, #3d5c82 0%, #2e4a6a 100%) !important;
   box-shadow: 0 6px 18px rgba(30,80,140,0.45) !important;
   color: #c5dcf2 !important;
 }
 /* Col-2: Begin  →  teal / emerald */
-.block-container [data-testid="column"]:nth-child(2) [data-testid="stButton"] button {
+[data-testid="stHorizontalBlock"] > div:nth-child(2) [data-testid="stButton"] button {
   background: linear-gradient(135deg, #0f7a6e 0%, #0a5a51 100%) !important;
   color: #a0f0e8 !important;
   border: 1px solid rgba(20,180,160,0.35) !important;
   box-shadow: 0 2px 8px rgba(10,100,90,0.40) !important;
 }
-.block-container [data-testid="column"]:nth-child(2) [data-testid="stButton"] button:hover {
+[data-testid="stHorizontalBlock"] > div:nth-child(2) [data-testid="stButton"] button:hover {
   background: linear-gradient(135deg, #129487 0%, #0d6e63 100%) !important;
   box-shadow: 0 6px 18px rgba(10,150,130,0.50) !important;
   color: #ccfaf4 !important;
 }
 /* Col-3: Start Over  →  muted rose / danger */
-.block-container [data-testid="column"]:nth-child(3) [data-testid="stButton"] button {
+[data-testid="stHorizontalBlock"] > div:nth-child(3) [data-testid="stButton"] button {
   background: linear-gradient(135deg, #6b2233 0%, #4d1824 100%) !important;
   color: #f0a0b0 !important;
   border: 1px solid rgba(200,60,80,0.30) !important;
   box-shadow: 0 2px 8px rgba(120,20,40,0.35) !important;
 }
-.block-container [data-testid="column"]:nth-child(3) [data-testid="stButton"] button:hover {
+[data-testid="stHorizontalBlock"] > div:nth-child(3) [data-testid="stButton"] button:hover {
   background: linear-gradient(135deg, #7e2a3e 0%, #5c1e2c 100%) !important;
   box-shadow: 0 6px 18px rgba(160,30,55,0.45) !important;
   color: #f8c0cc !important;
@@ -243,11 +238,12 @@ button[data-testid*="edit"] {
   font-size: 15px !important;
   line-height: 1.72 !important;
   color: var(--cream) !important;
-  overflow-wrap: break-word !important;
-  word-break: break-word !important;
 }
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p {
   margin: 0 0 0.55em 0 !important;
+  word-wrap: break-word !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
 }
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p:last-child {
   margin-bottom: 0 !important;
@@ -1695,26 +1691,19 @@ def main():
             padding: 18px 0 !important;
             box-shadow: none !important;
             backdrop-filter: none !important;
-            width: 100% !important;
             box-sizing: border-box !important;
         }
         /* Hairline divider between turns */
         [data-testid="stChatMessage"] + [data-testid="stChatMessage"] {
             border-top: 1px solid rgba(139,92,246,0.15) !important;
         }
-        /* Inner column fills full width */
-        [data-testid="stChatMessage"] > div {
-            width: 100% !important;
-        }
+
         /* Text uniform styling */
-        [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] {
-            width: 100% !important;
-            overflow-wrap: break-word !important;
-            word-break: break-word !important;
-        }
         [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p {
             color: #d8d5f0 !important;
             margin: 0 0 0.6em 0 !important;
+            word-wrap: break-word !important;
+            word-break: normal !important;
             overflow-wrap: break-word !important;
         }
         [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p:last-child {
