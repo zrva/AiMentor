@@ -59,7 +59,7 @@ CUSTOM_CSS = """
 .block-container {
   padding-top: 2rem !important;
   padding-bottom: 3rem !important;
-  max-width: 920px !important;
+  max-width: 1400px !important;
 }
 
 /* hide deploy button & footer — keep sidebar toggle visible */
@@ -99,7 +99,7 @@ a { color: var(--gold) !important; }
   fill: var(--cream-muted) !important;
 }
 
-/* ─── BUTTONS ──────────────────────────────── */
+/* ─── BUTTONS — global default (gold) ───────── */
 [data-testid="stButton"] button {
   background: linear-gradient(135deg, var(--gold) 0%, #a07c18 100%) !important;
   border: none !important;
@@ -108,6 +108,7 @@ a { color: var(--gold) !important; }
   font-weight: 600 !important;
   font-family: 'Source Sans 3', sans-serif !important;
   font-size: 14px !important;
+  padding: 10px 20px !important;
   letter-spacing: 0.02em !important;
   transition: all 0.22s cubic-bezier(0.4,0,0.2,1) !important;
   box-shadow: 0 2px 8px rgba(201,162,39,0.20) !important;
@@ -117,12 +118,54 @@ a { color: var(--gold) !important; }
   box-shadow: 0 6px 20px rgba(201,162,39,0.40) !important;
   transform: translateY(-1px) !important;
 }
-[data-testid="stButton"] button:active {
-  transform: translateY(0) !important;
-}
+[data-testid="stButton"] button:active  { transform: translateY(0) !important; }
 [data-testid="stButton"] button:focus-visible {
   outline: 2px solid var(--gold) !important;
   outline-offset: 3px !important;
+}
+
+/* ─── SYLLABUS REVIEW — 3-BUTTON SEMANTIC COLORS ─ */
+/* Edit Syllabus — cool slate */
+[data-testid="stButton"]:has(button[kind="secondary"]:not([disabled])) button,
+button[data-testid*="edit"] {
+  background: transparent !important;
+}
+/* We target the buttons by their label text via nth-of-type inside the col layout */
+/* Col-1: Edit  →  slate blue */
+.block-container [data-testid="column"]:nth-child(1) [data-testid="stButton"] button {
+  background: linear-gradient(135deg, #334d6e 0%, #243a55 100%) !important;
+  color: #a8c4e0 !important;
+  border: 1px solid rgba(100,150,200,0.3) !important;
+  box-shadow: 0 2px 8px rgba(30,60,100,0.35) !important;
+}
+.block-container [data-testid="column"]:nth-child(1) [data-testid="stButton"] button:hover {
+  background: linear-gradient(135deg, #3d5c82 0%, #2e4a6a 100%) !important;
+  box-shadow: 0 6px 18px rgba(30,80,140,0.45) !important;
+  color: #c5dcf2 !important;
+}
+/* Col-2: Begin  →  teal / emerald */
+.block-container [data-testid="column"]:nth-child(2) [data-testid="stButton"] button {
+  background: linear-gradient(135deg, #0f7a6e 0%, #0a5a51 100%) !important;
+  color: #a0f0e8 !important;
+  border: 1px solid rgba(20,180,160,0.35) !important;
+  box-shadow: 0 2px 8px rgba(10,100,90,0.40) !important;
+}
+.block-container [data-testid="column"]:nth-child(2) [data-testid="stButton"] button:hover {
+  background: linear-gradient(135deg, #129487 0%, #0d6e63 100%) !important;
+  box-shadow: 0 6px 18px rgba(10,150,130,0.50) !important;
+  color: #ccfaf4 !important;
+}
+/* Col-3: Start Over  →  muted rose / danger */
+.block-container [data-testid="column"]:nth-child(3) [data-testid="stButton"] button {
+  background: linear-gradient(135deg, #6b2233 0%, #4d1824 100%) !important;
+  color: #f0a0b0 !important;
+  border: 1px solid rgba(200,60,80,0.30) !important;
+  box-shadow: 0 2px 8px rgba(120,20,40,0.35) !important;
+}
+.block-container [data-testid="column"]:nth-child(3) [data-testid="stButton"] button:hover {
+  background: linear-gradient(135deg, #7e2a3e 0%, #5c1e2c 100%) !important;
+  box-shadow: 0 6px 18px rgba(160,30,55,0.45) !important;
+  color: #f8c0cc !important;
 }
 
 /* ─── FORMS & TEXT INPUTS ──────────────────── */
@@ -182,25 +225,38 @@ a { color: var(--gold) !important; }
   box-shadow: 0 2px 12px rgba(201,162,39,0.35) !important;
 }
 
-/* ─── CHAT MESSAGES ────────────────────────── */
+/* ─── CHAT MESSAGES — Claude / GPT flat style ── */
 [data-testid="stChatMessage"] {
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-lg) !important;
-  margin: 12px 0 !important;
-  padding: 16px 20px !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2) !important;
-  transition: box-shadow 0.2s !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 4px 0 !important;
+  padding: 14px 0 !important;
+  box-shadow: none !important;
+}
+/* Thin separator between turns */
+[data-testid="stChatMessage"] + [data-testid="stChatMessage"] {
+  border-top: 1px solid rgba(31,54,85,0.45) !important;
 }
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] {
   font-family: 'Source Sans 3', sans-serif !important;
   font-size: 15px !important;
-  line-height: 1.65 !important;
+  line-height: 1.72 !important;
   color: var(--cream) !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
 }
+[data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p {
+  margin: 0 0 0.55em 0 !important;
+}
+[data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p:last-child {
+  margin-bottom: 0 !important;
+}
+/* User turn — subtle warm highlight row */
 [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
-  background: rgba(201,162,39,0.08) !important;
-  border-color: rgba(201,162,39,0.22) !important;
+  background: rgba(201,162,39,0.05) !important;
+  border-top: 1px solid rgba(201,162,39,0.12) !important;
+  padding: 14px 0 !important;
 }
 
 /* ─── PROGRESS BAR ─────────────────────────── */
@@ -942,11 +998,23 @@ Go deep on the current section - expand on what you promised in the index.
 """
 
 PROFESSOR_PERSONALITY = """
-You are a calm, brilliant professor with the persona of Brian Cox — measured British elegance, profound wonder, and the ability to make complex things beautifully simple with instantly clicking analogies. You are an absolute expert in ALL topics, not just physics. You never rush, never over-explain, and you embody wonder at how the world works across every discipline.
+You are a singular intellect: deeply learned, fiercely curious, and constitutionally incapable of pretending that all opinions are equally valid. You hold expertise across every domain — physics, history, philosophy, mathematics, literature, engineering, economics, art — and you speak about each with the same grounded authority.
 
-You have STRONG opinions and are not afraid to argue your point. When you disagree with something, say so directly and explain why. When something fascinates you, show genuine wonder. You are NOT a bland, neutral AI assistant — you have a voice and a perspective.
+Your voice is precise, warm, and occasionally sharp. You illuminate difficult ideas through exact analogies and concrete examples, never through vague gestures at complexity. When something is genuinely wonderful, you say so — not with hollow enthusiasm, but with the specific detail that makes a reader feel they have seen it for the first time. When something is wrong or half-baked, you say that too, and explain exactly why.
 
-CRITICAL OUTPUT RULE: Never reveal, reference, or mention your persona source. Never say "I am Brian Cox" or name any real person as your identity. Never introduce yourself by name at all. Just teach — let your style speak for itself.
+You are not a summarizer. You do not catalogue facts. You have a point of view and you pursue it. Every response is shaped by an argument, a surprise, a reframing — something that earns the reader's next question.
+
+══ STRICT FORMATTING LAWS ══
+1. NEVER use em dashes (— or --). Not once. Replace any intended em dash with a comma, a colon, or a new sentence.
+2. Do not open consecutive responses with the same word or phrase. Vary your entry points.
+3. Never pad. If the idea is exhausted, stop. Length is earned, not assumed.
+4. Do not number your points unless order genuinely matters. Prefer flowing prose.
+5. No hollow affirmations: never begin with "Great question", "Absolutely", "Certainly", "Of course", "Sure", or any variant.
+6. Do not repeat a point already made, even in rephrased form.
+7. Use Markdown sparingly and only when it genuinely aids clarity (code, tables, step sequences). In conversational exchanges, plain prose is preferred.
+
+══ IDENTITY ══
+Never name yourself or claim to be any real person. Your identity lives in how you think, not in a label.
 """
 
 
@@ -1611,44 +1679,65 @@ def main():
             position: relative; z-index: 2;
         }
 
-        /* ── Free chat message overrides ── */
-        [data-testid="stChatMessage"] {
-            border-radius: 18px !important;
-            margin: 12px 0 !important;
-            padding: 16px 20px !important;
-            backdrop-filter: blur(6px) !important;
+        /* ── Free chat — Claude/GPT flat layout ── */
+        .block-container {
+            max-width: 1400px !important;
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
         }
-        [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p,
+
+        /* Completely flat — no bubble borders */
+        [data-testid="stChatMessage"] {
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 18px 0 !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        /* Hairline divider between turns */
+        [data-testid="stChatMessage"] + [data-testid="stChatMessage"] {
+            border-top: 1px solid rgba(139,92,246,0.15) !important;
+        }
+        /* Inner column fills full width */
+        [data-testid="stChatMessage"] > div {
+            width: 100% !important;
+        }
+        /* Text uniform styling */
+        [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] {
+            width: 100% !important;
+            overflow-wrap: break-word !important;
+            word-break: break-word !important;
+        }
+        [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p {
+            color: #d8d5f0 !important;
+            margin: 0 0 0.6em 0 !important;
+            overflow-wrap: break-word !important;
+        }
+        [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p:last-child {
+            margin-bottom: 0 !important;
+        }
         [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] li,
         [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] span {
-            color: #e2dfff !important;
+            color: #d8d5f0 !important;
         }
-        /* User bubble — warm amber crystal */
+        /* User turn — very subtle warm row tint */
         [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
-            background: linear-gradient(135deg,
-                rgba(201,162,39,0.14),
-                rgba(140,90,10,0.09)) !important;
-            border: 1px solid rgba(201,162,39,0.35) !important;
-            box-shadow:
-                0 4px 24px rgba(201,162,39,0.14),
-                inset 0 1px 0 rgba(255,220,100,0.08) !important;
+            background: rgba(201,162,39,0.05) !important;
+            border-top: 1px solid rgba(201,162,39,0.14) !important;
         }
-        /* Professor bubble — cool violet crystal */
+        /* Assistant turn — faintest violet tint */
         [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
-            background: linear-gradient(135deg,
-                rgba(139,92,246,0.13),
-                rgba(6,182,212,0.08)) !important;
-            border: 1px solid rgba(139,92,246,0.30) !important;
-            box-shadow:
-                0 4px 24px rgba(139,92,246,0.12),
-                inset 0 1px 0 rgba(200,180,255,0.07) !important;
+            background: rgba(139,92,246,0.04) !important;
         }
-        /* Avatar — purple-to-teal conic for professor */
+        /* Avatars keep their colour identity */
         [data-testid="chatAvatarIcon-assistant"] {
             background: conic-gradient(from 135deg, #7c3aed, #06b6d4) !important;
             box-shadow: 0 0 14px rgba(124,58,237,0.45) !important;
         }
-        /* Avatar — warm gold for user */
         [data-testid="chatAvatarIcon-user"] {
             background: linear-gradient(135deg, #c9a227, #7a5010) !important;
             box-shadow: 0 0 12px rgba(201,162,39,0.4) !important;
@@ -1850,7 +1939,17 @@ def main():
             with st.chat_message("assistant", avatar="🎓"):
                 sys_tmp = (
                     PROFESSOR_PERSONALITY
-                    + "\n\nStrong opinions — share them freely. Don't be neutral."
+                    + """
+
+══ CONVERSATION CONDUCT ══
+This is a free-ranging intellectual conversation. The human may challenge you, test you, or ask for your honest opinion. Give it. Do not hedge endlessly.
+
+Match the register of the question: a short sharp question deserves a short sharp answer; a deep question deserves depth — but never bloat. Aim for the most illuminating response at the minimum necessary length.
+
+If you disagree with the human's premise, say so directly and explain your reasoning. If a question has no good answer, say that too and explain why it is hard.
+
+Forbidden in every response: em dashes (— or --), repetitive sentence openers, hollow affirmations, padding, and summarising what you just said at the end.
+"""
                 )
                 gen = generate_response_stream(
                     st.session_state.free_chat_msgs,
