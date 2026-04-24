@@ -32,8 +32,9 @@ Start-Process $llamaExe -ArgumentList $llamaArgs -WindowStyle Hidden
 Start-Sleep 5
 
 # 6. Start streamlit
-$streamlitCmd = Join-Path $PSScriptRoot "venv\Scripts\Activate.bat"
-Start-Process "cmd.exe" -ArgumentList "/c", "$streamlitCmd && streamlit run app.py" -WindowStyle Hidden -WorkingDirectory $ScriptDir
+$pythonExe = Join-Path $PSScriptRoot "venv\Scripts\python.exe"
+Start-Process $pythonExe -ArgumentList "-m", "streamlit", "run", "app.py" -WindowStyle Hidden -WorkingDirectory $ScriptDir
 
-# 7. Open browser (Streamlit does this automatically)
-# Start-Process "http://localhost:8501"
+# 7. Wait 3 seconds for Streamlit to initialize, then force-open browser
+Start-Sleep 3
+Start-Process "http://localhost:8501"
