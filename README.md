@@ -4,7 +4,7 @@
   <img src="https://img.shields.io/badge/Platform-Windows-0078D4?style=for-the-badge&logo=windows&logoColor=white" />
   <img src="https://img.shields.io/badge/Model-Bonsai--8B/4B-C9A227?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Status-Stable_v1.0-4ADE80?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/License-MIT-E8D5B7?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/License-GPLv3-E8D5B7?style=for-the-badge" />
 </p>
 
 <br>
