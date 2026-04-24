@@ -31,9 +31,9 @@ Start-Process $llamaExe -ArgumentList $llamaArgs -WindowStyle Hidden
 # 5. Wait for server
 Start-Sleep 5
 
-# 6. Start streamlit
+# 6. Start streamlit (headless + no usage stats to bypass email prompt)
 $pythonExe = Join-Path $PSScriptRoot "venv\Scripts\python.exe"
-Start-Process $pythonExe -ArgumentList "-m", "streamlit", "run", "app.py" -WindowStyle Hidden -WorkingDirectory $ScriptDir
+Start-Process $pythonExe -ArgumentList "-m", "streamlit", "run", "app.py", "--browser.gatherUsageStats", "false", "--server.headless", "true" -WindowStyle Hidden -WorkingDirectory $ScriptDir
 
 # 7. Wait 3 seconds for Streamlit to initialize, then force-open browser
 Start-Sleep 3
