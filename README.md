@@ -13,7 +13,7 @@ AiMentor is a local teaching assistant for Windows that pairs a Streamlit interf
 
 - Windows 10 or Windows 11
 - Python 3.11 or newer (setup installs it if missing)
-- At least 2 GB RAM for CPU mode
+- At least 8 GB RAM for CPU mode
 - Dedicated GPU recommended for faster performance
 - Internet access only during the first setup step
 
@@ -28,13 +28,15 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\setup.bat
 ```
 
-During setup, you will be prompted to select CPU or GPU mode. The script also downloads the following:
+During setup, you will be prompted to select one of the supported modes: CPU, NVIDIA, or AMD. Choose the option that matches your system, because the NVIDIA and AMD modes download a larger model and use higher thread/context settings that are not suitable for a normal CPU.
 
-- a compatible Python runtime or uses an existing one
+The setup script downloads:
+
+- a compatible Python runtime or uses an existing installation
 - a virtual environment in `venv`
 - the `streamlit` and `requests` packages
-- native `llama-server` binaries for your platform
-- a Bonsai GGUF model (`4B` for CPU or `8B` for GPU by default)
+- native `llama-server` binaries for the selected runtime
+- the appropriate Bonsai GGUF model and supporting files
 
 ## Launching the app
 
@@ -45,6 +47,12 @@ Run the launcher:
 ```
 
 This starts the local model server, launches Streamlit in the background, and opens the app at `http://localhost:8501`.
+
+To stop the background model server, run:
+
+```powershell
+.\stop.bat
+```
 
 ## Directory structure
 
@@ -70,8 +78,9 @@ This starts the local model server, launches Streamlit in the background, and op
 
 ## Notes
 
-- The application workflow is designed for Windows and uses native binaries from `download.ps1`.
-- GPU mode offers better performance; CPU mode is supported but slower.
+- After cloning or downloading the repository, run `setup.bat` to install dependencies and download the correct model and binaries.
+- The CPU mode uses a smaller model and smaller context size so the model can run on CPU hardware.
+- The NVIDIA and AMD modes use larger models and higher thread/context settings; do not select these options unless you have a compatible GPU.
 - If Python is not already installed, the setup uses `winget` to install Python 3.11.
 
 ## License
