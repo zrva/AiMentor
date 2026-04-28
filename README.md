@@ -14,29 +14,25 @@ AiMentor is a local teaching assistant for Windows that pairs a Streamlit interf
 - Windows 10 or Windows 11
 - Python 3.11 or newer (setup installs it if missing)
 - At least 8 GB RAM for CPU mode
-- Dedicated GPU recommended for faster performance
+- Any compatible GPU is acceptable for GPU mode
 - Internet access only during the first setup step
 
 ## Installation
 
-1. Clone the repository.
-2. Open PowerShell.
-3. Run the setup file:
+1. Clone or download this repository.
+2. Run `setup.bat`.
 
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\setup.bat
-```
+During setup, select the option that matches your hardware:
 
-During setup, you will be prompted to select one of the supported modes: CPU, NVIDIA, or AMD. Choose the option that matches your system, because the NVIDIA and AMD modes download a larger model and use higher thread/context settings that are not suitable for a normal CPU.
+- `CPU` mode uses a smaller model and lower context size so it can run on CPU systems.
+- `NVIDIA` and `AMD` modes use larger models and higher thread/context settings for GPU systems.
 
-The setup script downloads:
+The setup script downloads and prepares:
 
-- a compatible Python runtime or uses an existing installation
-- a virtual environment in `venv`
-- the `streamlit` and `requests` packages
-- native `llama-server` binaries for the selected runtime
-- the appropriate Bonsai GGUF model and supporting files
+- a Python virtual environment in `venv`
+- Python package dependencies from `requirements.txt`
+- the appropriate native `llama-server` binaries
+- the Bonsai GGUF model for the selected mode
 
 ## Launching the app
 
@@ -78,10 +74,13 @@ To stop the background model server, run:
 
 ## Notes
 
-- After cloning or downloading the repository, run `setup.bat` to install dependencies and download the correct model and binaries.
+- After cloning or downloading the repository, just run `setup.bat` and then `start.bat`.
+- CPU mode requires at least 8 GB of RAM and downloads about 1.5 GB of model data.
+- GPU mode is optimized to work on any compatible GPU and downloads about 2.5 GB of model data.
+- Setup takes approximately 20–25 minutes for CPU mode and 30–35 minutes for GPU mode.
 - The CPU mode uses a smaller model and smaller context size so the model can run on CPU hardware.
-- The NVIDIA and AMD modes use larger models and higher thread/context settings; do not select these options unless you have a compatible GPU.
-- If Python is not already installed, the setup uses `winget` to install Python 3.11.
+- The NVIDIA and AMD modes use larger models and higher thread/context settings for GPU systems.
+- If Python is not already installed, the setup script installs Python 3.11 automatically.
 
 ## License
 
