@@ -1,107 +1,79 @@
-# <p align="center"><code>AiMentor : Local / Offline AI Tutor</code></p>
+# AiMentor
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Platform-Windows-0078D4?style=for-the-badge&logo=windows&logoColor=white" />
-  <img src="https://img.shields.io/badge/Model-Bonsai--8B/4B-C9A227?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Status-Stable_v1.0-4ADE80?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/License-GPLv3-E8D5B7?style=for-the-badge" />
-</p>
+AiMentor is a local teaching assistant for Windows that pairs a Streamlit interface with a local LLM backend. It runs entirely on your machine after setup and does not require external AI service calls during normal use.
 
-<br>
+## Overview
 
-### <font face="Times New Roman, serif"><b><i>The Vision</i></b></font>
-*AiMentor is a fully offline academic professor designed to guide you through complex subjects. Built with a sophisticated Navy and Gold aesthetic, it provides a professional interface for structured learning and intellectual debate.*
+- `app.py` runs the Streamlit user interface.
+- `help.ps1` and `start.bat` launch the local `llama-server` process and open the web interface.
+- `download.ps1` installs Python, dependencies, model weights, and native binaries.
+- `requirements.txt` declares the Python dependencies used by the app.
 
-> *Education is not the filling of a pail, but the lighting of a fire.* : *AiMentor Design Philosophy*
+## Requirements
 
-<br>
+- Windows 10 or Windows 11
+- Python 3.11 or newer (setup installs it if missing)
+- At least 2 GB RAM for CPU mode
+- Dedicated GPU recommended for faster performance
+- Internet access only during the first setup step
 
-## <font face="Times New Roman, serif"><b><i>Quick Start for Windows</i></b></font>
+## Installation
 
-*Experience elite learning in three stages*
+1. Clone the repository.
+2. Open PowerShell.
+3. Run the setup file:
 
-1.  **Clone** *this repository to your desktop.*
-2.  **Double click** *setup.bat* (*Handles Python, server binaries, and model weights*).
-3.  **Launch** *via start.bat.*
-
-*Prefer the terminal?*
 ```powershell
-# Run with execution bypass
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\download.ps1
+.\setup.bat
 ```
 
-<br>
+During setup, you will be prompted to select CPU or GPU mode. The script also downloads the following:
 
-## <font face="Times New Roman, serif"><b><i>Features</i></b></font>
+- a compatible Python runtime or uses an existing one
+- a virtual environment in `venv`
+- the `streamlit` and `requests` packages
+- native `llama-server` binaries for your platform
+- a Bonsai GGUF model (`4B` for CPU or `8B` for GPU by default)
 
-| Feature | Description |
-| :--- | :--- |
-| **Syllabus Architect** | *Generates comprehensive, multi phase learning paths dynamically.* |
-| **Dual Mode** | *Choose between Structured Syllabus or Free form Academic Debate.* |
-| **Total Privacy** | *100 percent local operation. Your data never leaves your machine.* |
-| **Progress Sync** | *Robust checkpoint system to resume your journey exactly where you left off.* |
-| **Coded Personality** | *Not a generic AI : it has opinions, a distinct teaching style, and intellectual rigor.* |
+## Launching the app
 
-<br>
+Run the launcher:
 
-## <font face="Times New Roman, serif"><b><i>The Engine Under the Hood</i></b></font>
-
-*AiMentor auto configures itself based on your hardware for the smoothest experience possible.*
-
-### <font face="Times New Roman, serif"><b><i>Hardware Profiles</i></b></font>
-
-| Hardware | Default Model | Speed | Context Size | Max Output |
-| :--- | :--- | :--- | :--- | :--- |
-| **NVIDIA or AMD GPU** | **Bonsai 8B** | *Near Instant* | 4,096 | 6,500 |
-| **Standard CPU** | **Bonsai 4B** | *Very Slow* | 2,048 | 1,024 |
-
-<br>
-
-## <font face="Times New Roman, serif"><b><i>Technical Requirements</i></b></font>
-
-* **OS** : *Windows 10/11*
-* **Total System Memory** : *2 to 4 GB RAM is sufficient for operation*
-* **Graphics Recommendation** : *GPU with 4 GB VRAM minimum is highly recommended for best results*
-* **Architecture** : *Works on CPU but performance is significantly reduced*
-* **Internet** : *Required only for initial one click setup*
-
-### <font face="Times New Roman, serif"><b><i>Directory Structure</i></b></font>
-```text
-AiMentor / 
-├── setup.bat         # One click installation
-├── download.ps1      # Smart downloader (Binary + Model)
-├── start.bat          # App launcher
-├── app.py             # Streamlit Professor Interface
-├── bin /              # Optimized llama server binaries
-└── models /           # Local GGUF weights
+```powershell
+.\start.bat
 ```
 
-<br>
+This starts the local model server, launches Streamlit in the background, and opens the app at `http://localhost:8501`.
 
-## <font face="Times New Roman, serif"><b><i>Gallery</i></b></font>
+## Directory structure
 
-<p align="center">
-  <i>Elite Interface, Thoughtful Design</i>
-</p>
+- `app.py` — Streamlit interface
+- `download.ps1` — setup and download logic
+- `start.bat` — launcher for the app
+- `setup.bat` — wrapper to invoke the setup script
+- `help.ps1` — background startup for the model server and Streamlit
+- `requirements.txt` — Python package requirements
+- `bin/` — downloaded `llama-server` binaries
+- `models/` — downloaded GGUF model weights
+- `assets/screenshots/` — interface screenshots
 
-| *Structured Learning* | *Intellectual Debate* |
-| :---: | :---: |
-| ![Syllabus](assets/screenshots/syllabus_section.png) | ![Chat](assets/screenshots/freechat.png) |
-| *Deep structured path* | *Fluid reasoning* |
+## Configuration
 
-<details>
-<summary>View More Screenshots</summary>
+- The setup script respects the `BONSAI_MODEL` environment variable if set before installation.
+- Runtime settings are stored in `.gpu_type` and `.model_size` so `start.bat` can use the correct binary and model file.
 
-![Section View](assets/screenshots/section_1.png)
-![Syllabus Generation](assets/screenshots/generates_syllabus.png)
-![Deep Questioning](assets/screenshots/freechat_question.png)
+## Dependencies
 
-</details>
+- `streamlit>=1.28.0`
+- `requests>=2.31.0`
 
-<br>
+## Notes
 
-<p align="center">
-  *Built by the AiMentor Team*<br>
-  <i>"Towards a smarter, local future."</i>
-</p>
+- The application workflow is designed for Windows and uses native binaries from `download.ps1`.
+- GPU mode offers better performance; CPU mode is supported but slower.
+- If Python is not already installed, the setup uses `winget` to install Python 3.11.
+
+## License
+
+This repository is licensed under GPLv3.
