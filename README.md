@@ -1,86 +1,163 @@
 # AiMentor
 
-AiMentor is a local teaching assistant for Windows that pairs a Streamlit interface with a local LLM backend. It runs entirely on your machine after setup and does not require external AI service calls during normal use.
+AiMentor is a local AI teacher for Windows, not a general-purpose assistant.
 
-## Overview
+The project is built around a simple constraint: when you ask an LLM to teach a topic in a long conversation, it often starts strong, then drifts, hallucinates, or loses the structure of the subject. AiMentor reduces that drift by forcing the model to create a syllabus first, then teach section by section along that path.
 
-- `app.py` runs the Streamlit user interface.
-- `help.ps1` and `start.bat` launch the local `llama-server` process and open the web interface.
-- `download.ps1` installs Python, dependencies, model weights, and native binaries.
-- `requirements.txt` declares the Python dependencies used by the app.
+It also includes a separate Free Chat mode for open-ended conversation when structure is not the goal.
+
+## Why this exists
+
+Most AI chat tools are reactive. They answer the latest message well enough, but over time they can:
+
+- drift away from the original learning objective
+- skip foundations and jump into disconnected details
+- lose a coherent teaching sequence
+- behave more like a chat assistant than an actual tutor
+
+AiMentor is designed to behave more like a teacher. Before teaching begins, it generates a learning roadmap for the chosen topic. The student can review or edit that roadmap, and only then does the model start teaching.
+
+## Core idea
+
+The structured course flow is:
+
+1. Enter a topic.
+2. Choose an expertise level.
+3. Let the model generate a syllabus first.
+4. Review or edit the syllabus.
+5. Learn one section at a time.
+6. Ask doubts within the current section.
+7. Move to the next section only after finishing the current one.
+
+This keeps the session anchored to the original topic and gives the model a fixed path to follow instead of letting the conversation sprawl indefinitely.
+
+## Features
+
+- Syllabus-first learning flow
+- Topic-specific roadmap generation in Markdown
+- Editable syllabus before teaching starts
+- Section-by-section teaching with progress tracking
+- Resume support for saved structured-course sessions
+- Separate Free Chat mode for unstructured conversations
+- Runs locally on your machine with a local `llama-server` backend
+- No external AI API calls during normal use after setup
+
+## Modes
+
+### 1. Structured Course
+
+This is the main product experience.
+
+For a given topic, AiMentor:
+
+- generates a syllabus first
+- asks you to review it before teaching
+- teaches the current section in depth
+- lets you ask follow-up doubts for that section
+- advances through the syllabus in order
+- saves progress so you can resume later
+
+This mode is intended for actual learning, where sequence matters.
+
+### 2. Free Chat
+
+Free Chat is intentionally separate from the teaching flow.
+
+Use it when you want:
+
+- casual conversation
+- brainstorming
+- quick questions
+- open-ended discussion not tied to a fixed syllabus
+
+This keeps the structured teaching experience clean instead of mixing it with general assistant behavior.
+
+## How AiMentor teaches
+
+AiMentor does not immediately start explaining the topic. It first creates a roadmap, then uses that roadmap as the teaching contract for the rest of the session.
+
+That means:
+
+- the topic stays anchored
+- the model has a defined sequence to follow
+- the student can inspect the plan before learning begins
+- long sessions remain more coherent than normal chat-based tutoring
+
+In short, the model is constrained to teach, not just respond.
 
 ## Requirements
 
 - Windows 10 or Windows 11
-- Python 3.11 or newer (setup installs it if missing)
-- At least 8 GB RAM for CPU mode
-- Any compatible GPU is acceptable for GPU mode
-- Internet access only during the first setup step
+- Internet access during first-time setup
+
+AiMentor is designed to run efficiently on a wide range of hardware, including lower-end GPUs. During setup, you choose the runtime profile that matches your system so the local model and launch settings are configured appropriately.
 
 ## Installation
 
-1. Clone or download this repository.
-2. Run `setup.bat`.
+On first run, clone or download this repository and run `setup.bat`.
 
-During setup, select the option that matches your hardware:
+This first-run setup is important because it lets you choose the hardware mode that matches your machine:
 
-- `CPU` mode uses a smaller model and lower context size so it can run on CPU systems.
-- `NVIDIA` and `AMD` modes use larger models and higher thread/context settings for GPU systems.
+- `CPU` for lower-resource systems
+- `NVIDIA` for NVIDIA GPUs
+- `AMD` for AMD GPUs
 
-The setup script downloads and prepares:
+AiMentor is tuned to work efficiently and quickly even on lower-end GPUs, so choosing the correct mode during setup helps the app use the right model, runtime settings, and binaries for the best experience.
 
-- a Python virtual environment in `venv`
-- Python package dependencies from `requirements.txt`
-- the appropriate native `llama-server` binaries
-- the Bonsai GGUF model for the selected mode
+The setup process prepares:
 
-## Launching the app
+- a Python virtual environment
+- Python dependencies
+- local `llama-server` binaries
+- the required GGUF model files
 
-Run the launcher:
+## Run the app
 
-```powershell
-.\start.bat
-```
+After setup is complete, use `start.bat` to launch AiMentor.
 
-This starts the local model server, launches Streamlit in the background, and opens the app at `http://localhost:8501`.
+This will:
 
-To stop the background model server, run:
+- start the local model server
+- launch the Streamlit app
+- open the interface at `http://localhost:8501`
 
-```powershell
-.\stop.bat
-```
+To stop the local processes, use `stop.bat`.
 
-## Directory structure
+## Project structure
 
-- `app.py` — Streamlit interface
-- `download.ps1` — setup and download logic
-- `start.bat` — launcher for the app
-- `setup.bat` — wrapper to invoke the setup script
-- `help.ps1` — background startup for the model server and Streamlit
-- `requirements.txt` — Python package requirements
-- `bin/` — downloaded `llama-server` binaries
-- `models/` — downloaded GGUF model weights
-- `assets/screenshots/` — interface screenshots
+- `README.md` - project overview and usage
+- `setup.bat` - setup entry point
+- `start.bat` - app launcher
+- `stop.bat` - stops background processes
+- `AiMentor_Core_DO_NOT_DELETE/app.py` - Streamlit application and teaching flow
+- `AiMentor_Core_DO_NOT_DELETE/download.ps1` - installation and model download logic
+- `AiMentor_Core_DO_NOT_DELETE/help.ps1` - local startup orchestration
+- `AiMentor_Core_DO_NOT_DELETE/requirements.txt` - Python dependencies
 
-## Configuration
+## Current behavior
 
-- The setup script respects the `BONSAI_MODEL` environment variable if set before installation.
-- Runtime settings are stored in `.gpu_type` and `.model_size` so `start.bat` can use the correct binary and model file.
+The current implementation includes:
 
-## Dependencies
+- expertise-level selection before syllabus generation
+- syllabus review and syllabus editing
+- section progress tracking
+- saved structured-course checkpoints
+- saved Free Chat history
+- fully local runtime after installation
 
-- `streamlit>=1.28.0`
-- `requests>=2.31.0`
+## Positioning
 
-## Notes
+AiMentor should be described as:
 
-- After cloning or downloading the repository, just run `setup.bat` and then `start.bat`.
-- CPU mode requires at least 8 GB of RAM and downloads about 1.5 GB of model data.
-- GPU mode is optimized to work on any compatible GPU and downloads about 2.5 GB of model data.
-- Setup takes approximately 20–25 minutes for CPU mode and 30–35 minutes for GPU mode.
-- The CPU mode uses a smaller model and smaller context size so the model can run on CPU hardware.
-- The NVIDIA and AMD modes use larger models and higher thread/context settings for GPU systems.
-- If Python is not already installed, the setup script installs Python 3.11 automatically.
+- an AI teacher
+- a syllabus-driven tutor
+- a structured learning interface for local LLMs
+
+It should not be described as:
+
+- a generic chatbot
+- a general assistant
+- an open-ended tutoring chat without structure
 
 ## License
 
