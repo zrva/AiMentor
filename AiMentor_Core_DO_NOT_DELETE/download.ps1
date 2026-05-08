@@ -1,19 +1,20 @@
 # AiMentor - One-Command Setup for Windows (PowerShell)
-# Usage:  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\app\scripts\download.ps1
+# Usage:  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; .\download.ps1
 # Optional:  $env:BONSAI_MODEL = "4B"   (default: auto-select 8B for GPU, 4B for CPU)
-$ErrorActionPreference = "Stop"
+param(
+    [switch]$Reconfigure
+)
 
-$RepoRoot = Split-Path -Parent $PSScriptRoot
-$ConfigDir = Join-Path $RepoRoot "config"
+$ErrorActionPreference = "Stop"
 
 # Model will be auto-selected based on GPU detection unless user overrides
 $UserModelOverride = $env:BONSAI_MODEL  # empty = auto-detect
 $ReleaseTag = "prism-b8796-e2d6742"
 $WinAssetTag = "prism-b1-e2d6742"
 $BaseUrl = "https://github.com/PrismML-Eng/llama.cpp/releases/download/$ReleaseTag"
-$VenvDir = Join-Path $RepoRoot "venv"
+$VenvDir = Join-Path $PSScriptRoot "venv"
 $VenvPy = Join-Path $VenvDir "Scripts\python.exe"
-$RequirementsFile = Join-Path $RepoRoot "requirements.txt"
+$RequirementsFile = Join-Path $PSScriptRoot "requirements.txt"
 
 # ── Helpers ──
 
@@ -63,56 +64,62 @@ function Find-CompatiblePython {
 
 Write-Host ""
 Write-Host "==========================================="
-Write-Host "   AiMentor - Full Setup (Windows)"
+if ($Reconfigure) {
+    Write-Host "   AiMentor - Reconfigure (Windows)"
+} else {
+    Write-Host "   AiMentor - Full Setup (Windows)"
+}
 Write-Host "==========================================="
 Write-Host ""
 
-New-Item -ItemType Directory -Path $ConfigDir -Force | Out-Null
-
 # ── 1. Python ──
-Write-Host "==> [1/6] Checking Python ..." -ForegroundColor Cyan
-$DetectedPython = Find-CompatiblePython
-if ($DetectedPython) {
-    Write-Host "[OK] Python $($DetectedPython.Version) found at $($DetectedPython.Path)" -ForegroundColor Green
-} else {
-    Write-Host "==> Installing Python 3.11 via winget ..." -ForegroundColor Cyan
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        Write-Host "[ERR] winget not available. Install Python 3.11+ from https://www.python.org/downloads/" -ForegroundColor Red
-        exit 1
-    }
-    $prevEAP = $ErrorActionPreference
-    $ErrorActionPreference = "Continue"
-    try { winget install -e --id "Python.Python.3.11" --accept-package-agreements --accept-source-agreements } catch {}
-    $ErrorActionPreference = $prevEAP
-    Refresh-SessionPath
+if (-not $Reconfigure) {
+    Write-Host "==> [1/6] Checking Python ..." -ForegroundColor Cyan
     $DetectedPython = Find-CompatiblePython
-    if (-not $DetectedPython) {
-        Write-Host "[ERR] Python installation failed. Install manually from https://www.python.org/downloads/" -ForegroundColor Red
-        exit 1
+    if ($DetectedPython) {
+        Write-Host "[OK] Python $($DetectedPython.Version) found at $($DetectedPython.Path)" -ForegroundColor Green
+    } else {
+        Write-Host "==> Installing Python 3.11 via winget ..." -ForegroundColor Cyan
+        if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+            Write-Host "[ERR] winget not available. Install Python 3.11+ from https://www.python.org/downloads/" -ForegroundColor Red
+            exit 1
+        }
+        $prevEAP = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        try { winget install -e --id "Python.Python.3.11" --accept-package-agreements --accept-source-agreements } catch {}
+        $ErrorActionPreference = $prevEAP
+        Refresh-SessionPath
+        $DetectedPython = Find-CompatiblePython
+        if (-not $DetectedPython) {
+            Write-Host "[ERR] Python installation failed. Install manually from https://www.python.org/downloads/" -ForegroundColor Red
+            exit 1
+        }
     }
-}
 
-# ── 2. Virtual Environment + Streamlit ──
-Write-Host "==> [2/6] Setting up Python environment ..." -ForegroundColor Cyan
-if (Test-Path $VenvPy) {
-    Write-Host "[OK] Virtual environment already exists." -ForegroundColor Green
-} else {
-    & $DetectedPython.Path -m venv $VenvDir
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "[ERR] Failed to create virtual environment." -ForegroundColor Red
-        exit 1
+    # ── 2. Virtual Environment + Streamlit ──
+    Write-Host "==> [2/6] Setting up Python environment ..." -ForegroundColor Cyan
+    if (Test-Path $VenvPy) {
+        Write-Host "[OK] Virtual environment already exists." -ForegroundColor Green
+    } else {
+        & $DetectedPython.Path -m venv $VenvDir
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[ERR] Failed to create virtual environment." -ForegroundColor Red
+            exit 1
+        }
+        Write-Host "[OK] Created virtual environment." -ForegroundColor Green
     }
-    Write-Host "[OK] Created virtual environment." -ForegroundColor Green
-}
 
-Write-Host "==> Installing Python dependencies ..." -ForegroundColor Cyan
-& "$VenvPy" -m pip install --upgrade pip -q
-if (Test-Path $RequirementsFile) {
-    & "$VenvPy" -m pip install -r $RequirementsFile -q
+    Write-Host "==> Installing Python dependencies ..." -ForegroundColor Cyan
+    & "$VenvPy" -m pip install --upgrade pip -q
+    if (Test-Path $RequirementsFile) {
+        & "$VenvPy" -m pip install -r $RequirementsFile -q
+    } else {
+        & "$VenvPy" -m pip install streamlit requests -q
+    }
+    Write-Host "[OK] Python dependencies installed." -ForegroundColor Green
 } else {
-    & "$VenvPy" -m pip install streamlit requests -q
+    Write-Host "[SKIP] Steps 1-2: Python & venv already set up." -ForegroundColor DarkGray
 }
-Write-Host "[OK] Python dependencies installed." -ForegroundColor Green
 
 # ── 3. Ask user: GPU or CPU ──
 Write-Host "==> [3/6] Hardware Selection" -ForegroundColor Cyan
@@ -192,10 +199,10 @@ if ($WinArch -eq "arm64" -and $GpuType -ne "cpu") {
 }
 
 if ($GpuType -eq "hip") {
-    $BinDir = Join-Path $RepoRoot "bin\hip"
+    $BinDir = Join-Path $PSScriptRoot "bin\hip"
     Download-Binary "llama-bin-win-hip-radeon-x64.zip" $BinDir
 } elseif ($GpuType -eq "cuda") {
-    $BinDir = Join-Path $RepoRoot "bin\cuda"
+    $BinDir = Join-Path $PSScriptRoot "bin\cuda"
     Download-Binary "llama-${WinAssetTag}-bin-win-cuda-${CudaTag}-x64.zip" $BinDir
     # Also download CUDA runtime DLLs
     $DllAsset = "cudart-llama-bin-win-cuda-${CudaTag}-x64.zip"
@@ -210,21 +217,21 @@ if ($GpuType -eq "hip") {
         Write-Host "[WARN] Could not download CUDA DLLs. You may need CUDA toolkit installed." -ForegroundColor Yellow
     }
 } elseif ($GpuType -eq "vulkan") {
-    $BinDir = Join-Path $RepoRoot "bin\vulkan"
+    $BinDir = Join-Path $PSScriptRoot "bin\vulkan"
     Download-Binary "llama-bin-win-cpu-${WinArch}.zip" $BinDir "llama-server.exe"
     Download-Binary "llama-bin-win-vulkan-x64.zip" $BinDir "ggml-vulkan.dll"
 } else {
-    $BinDir = Join-Path $RepoRoot "bin\cpu"
+    $BinDir = Join-Path $PSScriptRoot "bin\cpu"
     Download-Binary "llama-bin-win-cpu-${WinArch}.zip" $BinDir
 }
 
-# Save detected GPU type for run.bat and app.py
-Set-Content -Path (Join-Path $ConfigDir ".gpu_type") -Value $GpuType
+# Save detected GPU type for help.ps1
+Set-Content -Path (Join-Path $PSScriptRoot ".gpu_type") -Value $GpuType
 
 # ── 5. Download GGUF model ──
 Write-Host "==> [5/6] Downloading Bonsai-$BonsaiModel model ..." -ForegroundColor Cyan
 
-$ModelDir = Join-Path $RepoRoot "models\gguf\$BonsaiModel"
+$ModelDir = Join-Path $PSScriptRoot "models\gguf\$BonsaiModel"
 $ModelFile = "Bonsai-${BonsaiModel}.gguf"
 $ModelPath = Join-Path $ModelDir $ModelFile
 
@@ -244,13 +251,17 @@ if (Test-Path $ModelPath) {
     }
 }
 
-# Save model size for run.bat
-Set-Content -Path (Join-Path $ConfigDir ".model_size") -Value $BonsaiModel
+# Save model size for help.ps1
+Set-Content -Path (Join-Path $PSScriptRoot ".model_size") -Value $BonsaiModel
 
 # ── 6. Done ──
 Write-Host ""
 Write-Host "==========================================="
-Write-Host "   Setup complete!"
+if ($Reconfigure) {
+    Write-Host "   Reconfiguration complete!"
+} else {
+    Write-Host "   Setup complete!"
+}
 Write-Host "==========================================="
 Write-Host ""
 Write-Host "  GPU Mode  : $GpuType" -ForegroundColor Cyan
@@ -258,5 +269,5 @@ Write-Host "  Model     : Bonsai-$BonsaiModel" -ForegroundColor Cyan
 Write-Host "  Binary    : $BinDir" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "  To start AiMentor, run:" -ForegroundColor Green
-Write-Host "    .\run.bat" -ForegroundColor Green
+Write-Host "    .\start.bat" -ForegroundColor Green
 Write-Host ""

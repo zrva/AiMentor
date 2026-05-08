@@ -1,20 +1,17 @@
 # Python
-venv/
 __pycache__/
 *.pyc
 .ruff_cache/
 
-# Setup artifacts (downloaded by setup.ps1)
-bin/
-models/
-.gpu_type
-.model_size
+# Setup artifacts (downloaded by setup — inside core folder)
+AiMentor_Core_DO_NOT_DELETE/venv/
+AiMentor_Core_DO_NOT_DELETE/bin/
+AiMentor_Core_DO_NOT_DELETE/models/
+AiMentor_Core_DO_NOT_DELETE/.gpu_type
+AiMentor_Core_DO_NOT_DELETE/.model_size
 
-# Workspace data
-llm_workspace/
-
-# Bonsai demo (duplicate, use root setup.ps1 instead)
-bonsaiiii/
+# Workspace data (user chat history & syllabi)
+AiMentor_Core_DO_NOT_DELETE/llm_workspace/
 
 # OS
 Thumbs.db
