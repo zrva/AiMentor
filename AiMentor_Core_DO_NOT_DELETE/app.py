@@ -15,6 +15,7 @@ st.set_page_config(page_title="AiMentor", page_icon="📚", layout="wide")
 CUSTOM_CSS = """
 <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Lato:wght@400;700&family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Lato:wght@400;700&family=Raleway:wght@400;500;600&display=swap');
 
 /* ═══════════════════════════════════════════
    DESIGN TOKENS — Navy × Gold palette
@@ -72,6 +73,7 @@ CUSTOM_CSS = """
 
 h1,
 .mentor-hero h1,
+.mentor-title,
 .sidebar-brand-title,
 .fc-hero-title {
   font-family: 'Abril Fatface', Georgia, serif !important;
@@ -384,7 +386,8 @@ details pre {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-6px); }
 }
-.mentor-hero h1 {
+.mentor-hero h1,
+.mentor-title {
   font-family: 'Abril Fatface', Georgia, serif !important;
   font-size: 2.6rem !important;
   font-weight: 400 !important;
@@ -394,6 +397,7 @@ details pre {
   background-clip: text !important;
   margin: 0.5rem 0 !important;
   letter-spacing: 0 !important;
+  line-height: 1.08 !important;
 }
 .mentor-hero p {
   color: var(--cream-muted) !important;
@@ -1970,7 +1974,7 @@ Forbidden in every response: em dashes (— or --), repetitive sentence openers,
                 """
                 <div class="mentor-hero">
                     <div class="hero-icon">🎓</div>
-                    <h1>AiMentor</h1>
+                    <div class="mentor-title" style="font-family:'Abril Fatface', Georgia, serif !important;">AiMentor</div>
                     <p>Your personal guide through any subject.<br>
                        Learn at your own pace.</p>
                 </div>
