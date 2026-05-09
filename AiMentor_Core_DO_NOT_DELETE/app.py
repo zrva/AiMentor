@@ -13,7 +13,7 @@ st.set_page_config(page_title="AiMentor", page_icon="📚", layout="wide")
 
 # ── Premium Design System ──────────────────────────────────────────────────────
 CUSTOM_CSS = """
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Lato:wght@400;700&family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 
 /* ═══════════════════════════════════════════
@@ -67,14 +67,21 @@ CUSTOM_CSS = """
 
 /* ─── TYPOGRAPHY ───────────────────────────── */
 *, *::before, *::after {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Raleway', sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6,
+h1,
+.mentor-hero h1,
+.sidebar-brand-title,
+.fc-hero-title {
+  font-family: 'Abril Fatface', Georgia, serif !important;
+}
+
+h2, h3, h4, h5, h6,
 [class*="heading"] {
-  font-family: 'Playfair Display', Georgia, serif !important;
+  font-family: 'Lato', sans-serif !important;
   color: var(--cream) !important;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 p, li, span, label, div {
@@ -106,7 +113,7 @@ a { color: var(--gold) !important; }
   color: #0a1020 !important;
   border-radius: var(--radius-md) !important;
   font-weight: 600 !important;
-  font-family: 'Source Sans 3', sans-serif !important;
+  font-family: 'Lato', sans-serif !important;
   font-size: 14px !important;
   padding: 10px 20px !important;
   letter-spacing: 0.02em !important;
@@ -185,7 +192,7 @@ a { color: var(--gold) !important; }
 [data-testid="stTextInput"] input {
   background: transparent !important;
   color: var(--cream) !important;
-  font-family: 'Source Sans 3', sans-serif !important;
+  font-family: 'Raleway', sans-serif !important;
   font-size: 15px !important;
 }
 [data-testid="stTextInput"] input::placeholder { color: var(--muted) !important; }
@@ -205,7 +212,7 @@ a { color: var(--gold) !important; }
 }
 [data-testid="stChatInput"] textarea {
   color: var(--cream) !important;
-  font-family: 'Source Sans 3', sans-serif !important;
+  font-family: 'Raleway', sans-serif !important;
   font-size: 15px !important;
   background: transparent !important;
 }
@@ -234,7 +241,7 @@ a { color: var(--gold) !important; }
   border-top: 1px solid rgba(31,54,85,0.45) !important;
 }
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] {
-  font-family: 'Source Sans 3', sans-serif !important;
+  font-family: 'Raleway', sans-serif !important;
   font-size: 15px !important;
   line-height: 1.72 !important;
   color: var(--cream) !important;
@@ -291,7 +298,7 @@ details {
 }
 details > summary {
   color: var(--gold) !important;
-  font-family: 'Source Sans 3', sans-serif !important;
+  font-family: 'Lato', sans-serif !important;
   font-weight: 600 !important;
   font-size: 13px !important;
   letter-spacing: 0.05em !important;
@@ -378,20 +385,20 @@ details pre {
   50%       { transform: translateY(-6px); }
 }
 .mentor-hero h1 {
-  font-family: 'Playfair Display', Georgia, serif !important;
+  font-family: 'Abril Fatface', Georgia, serif !important;
   font-size: 2.6rem !important;
-  font-weight: 700 !important;
+  font-weight: 400 !important;
   background: linear-gradient(135deg, var(--gold-light), var(--gold)) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   background-clip: text !important;
   margin: 0.5rem 0 !important;
-  letter-spacing: -0.02em !important;
+  letter-spacing: 0 !important;
 }
 .mentor-hero p {
   color: var(--cream-muted) !important;
   font-size: 1.05rem !important;
-  font-family: 'Source Sans 3', sans-serif !important;
+  font-family: 'Raleway', sans-serif !important;
   margin-top: 0.4rem !important;
 }
 
@@ -412,7 +419,7 @@ details pre {
 }
 .phase-header h3 {
   margin: 0 !important;
-  font-family: 'Playfair Display', serif !important;
+  font-family: 'Lato', sans-serif !important;
   font-size: 1.25rem !important;
   color: var(--cream) !important;
 }
@@ -449,7 +456,7 @@ details pre {
   transform: translateY(-2px);
 }
 .topic-card h4 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Lato', sans-serif;
   font-size: 1rem;
   color: var(--cream) !important;
   margin: 0 0 6px !important;
@@ -457,7 +464,7 @@ details pre {
 .topic-card .meta {
   font-size: 12px;
   color: var(--muted);
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Raleway', sans-serif;
 }
 .topic-card .progress-track {
   height: 3px;
@@ -503,7 +510,7 @@ details pre {
   border-radius: var(--radius-md);
   margin: 2px 0;
   transition: background 0.15s;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Raleway', sans-serif;
   font-size: 13.5px;
   line-height: 1.4;
   cursor: default;
@@ -523,7 +530,7 @@ details pre {
 
 /* Sidebar label */
 .sb-label {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -563,7 +570,7 @@ details pre {
 .chat-hero .icon { font-size: 36px; }
 .chat-hero h3 {
   margin: 0 !important;
-  font-family: 'Playfair Display', serif !important;
+  font-family: 'Lato', sans-serif !important;
   font-size: 1.3rem !important;
   color: var(--cream) !important;
 }
@@ -606,7 +613,7 @@ details pre {
 }
 .teach-header h2 {
   margin: 0 !important;
-  font-family: 'Playfair Display', serif !important;
+  font-family: 'Lato', sans-serif !important;
   color: var(--cream) !important;
   font-size: 1.5rem !important;
 }
@@ -622,7 +629,7 @@ details pre {
   border-radius: 99px;
   font-size: 12px;
   color: var(--gold);
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Lato', sans-serif;
   margin-bottom: 8px;
 }
 
@@ -634,7 +641,7 @@ details pre {
   padding: 3px 10px;
   border-radius: 99px;
   font-size: 11px;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 500;
 }
 .status-pill.online {
@@ -719,7 +726,7 @@ details pre {
 }
 /* ─── SIDEBAR LEARNING PATH ────────────────── */
 .sb-label {
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -736,7 +743,7 @@ details pre {
   border-radius: var(--radius-md);
   margin: 2px 0;
   transition: background 0.15s;
-  font-family: 'Source Sans 3', sans-serif;
+  font-family: 'Raleway', sans-serif;
   font-size: 13px;
   line-height: 1.4;
 }
@@ -1338,7 +1345,7 @@ def main():
             <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);
                         border-radius:12px;padding:16px 20px;margin-bottom:20px;">
                 <span style="font-size:18px;">⚠️</span>
-                <strong style="color:#fca5a5;font-family:'Playfair Display',serif;"> AI Engine Offline</strong>
+                <strong style="color:#fca5a5;font-family:'Lato',sans-serif;"> AI Engine Offline</strong>
                 <p style="margin:6px 0 0;color:#9ca3af;font-size:14px;">
                     Please boot your AI Backend on port <code style="color:#c9a227;">{SERVER_PORT}</code>
                     to connect.
@@ -1356,11 +1363,11 @@ def main():
         st.markdown(
             f"""
             <div style="padding:0 4px 16px;">
-                <div style="font-family:'Playfair Display',serif;font-size:1.15rem;
+                <div class="sidebar-brand-title" style="font-family:'Abril Fatface',serif;font-size:1.15rem;
                             font-weight:700;color:#e8d5b7;margin-bottom:4px;">
                     🎓 AiMentor
                 </div>
-                <div style="font-size:11px;color:#6b7b8c;font-family:'Source Sans 3',sans-serif;">
+                <div style="font-size:11px;color:#6b7b8c;font-family:'Raleway',sans-serif;">
                     {status_dot} {model_label}
                 </div>
             </div>
@@ -1588,19 +1595,19 @@ def main():
             50%       { box-shadow: 0 0 30px rgba(124,58,237,0.7), 0 0 60px rgba(6,182,212,0.35); }
         }
         .fc-title-text h2 {
-            font-family: 'Playfair Display', serif !important;
+            font-family: 'Abril Fatface', serif !important;
             font-size: 1.7rem !important;
-            font-weight: 700 !important;
+            font-weight: 400 !important;
             color: #fff !important;
             margin: 0 0 4px !important;
-            letter-spacing: -0.02em !important;
+            letter-spacing: 0 !important;
             text-shadow: 0 0 30px rgba(139,92,246,0.6) !important;
         }
         .fc-title-text p {
             font-size: 13.5px !important;
             color: rgba(180,180,210,0.75) !important;
             margin: 0 !important;
-            font-family: 'Source Sans 3', sans-serif !important;
+            font-family: 'Raleway', sans-serif !important;
         }
         .fc-status-chip {
             display: inline-flex;
@@ -1609,7 +1616,7 @@ def main():
             padding: 3px 10px;
             border-radius: 99px;
             font-size: 11px;
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: 'Lato', sans-serif;
             margin-left: 10px;
             vertical-align: middle;
         }
@@ -1651,7 +1658,7 @@ def main():
             background: rgba(139,92,246,0.08);
             font-size: 13px;
             color: rgba(180,180,220,0.85) !important;
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: 'Raleway', sans-serif;
             cursor: default;
             transition: all 0.2s;
             white-space: nowrap;
@@ -1785,7 +1792,7 @@ def main():
             50%       { box-shadow: 0 0 50px rgba(139,92,246,0.3), 0 0 80px rgba(6,182,212,0.1); }
         }
         .fc-empty h3 {
-            font-family: 'Playfair Display', serif !important;
+            font-family: 'Lato', sans-serif !important;
             font-size: 1.3rem !important;
             color: rgba(220,215,255,0.9) !important;
             margin: 0 0 8px !important;
@@ -1811,7 +1818,7 @@ def main():
             border: 1px solid rgba(139,92,246,0.25);
             background: rgba(139,92,246,0.07);
             color: rgba(180,165,255,0.8) !important;
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: 'Raleway', sans-serif;
         }
 
         /* Message counter badge */
@@ -1819,7 +1826,7 @@ def main():
             text-align: right;
             font-size: 11px;
             color: rgba(130,120,170,0.6);
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: 'Lato', sans-serif;
             padding: 0 4px 6px;
             letter-spacing: 0.03em;
         }
@@ -1965,7 +1972,7 @@ Forbidden in every response: em dashes (— or --), repetitive sentence openers,
                     <div class="hero-icon">🎓</div>
                     <h1>AiMentor</h1>
                     <p>Your personal guide through any subject.<br>
-                       Learn at your own pace — section by section.</p>
+                       Learn at your own pace.</p>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -1977,7 +1984,7 @@ Forbidden in every response: em dashes (— or --), repetitive sentence openers,
             with st.form("topic_entry"):
                 st.markdown(
                     "<div style='font-size:10px;text-transform:uppercase;letter-spacing:0.12em;"
-                    "color:#6b7b8c;text-align:center;margin-bottom:8px;font-family:\"Source Sans 3\",sans-serif;'>"
+                    "color:#6b7b8c;text-align:center;margin-bottom:8px;font-family:\"Lato\",sans-serif;'>"
                     "Select your level</div>",
                     unsafe_allow_html=True,
                 )
@@ -1992,7 +1999,7 @@ Forbidden in every response: em dashes (— or --), repetitive sentence openers,
                 st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 
                 st.markdown(
-                    "<label style='font-family:Playfair Display,serif;"
+                    "<label style='font-family:Lato,sans-serif;"
                     "font-size:1.1rem;color:#e8d5b7;display:block;margin-bottom:10px;'>"
                     "What would you like to learn?"
                     "</label>",
@@ -2404,7 +2411,7 @@ Forbidden in every response: em dashes (— or --), repetitive sentence openers,
                                 background:linear-gradient(135deg,rgba(201,162,39,0.08),rgba(201,162,39,0.02));
                                 border:1px solid rgba(201,162,39,0.2);border-radius:16px;margin-top:16px;">
                         <div style="font-size:52px;margin-bottom:12px;">🎓</div>
-                        <h3 style="font-family:'Playfair Display',serif;color:#e8d5b7;
+                        <h3 style="font-family:'Lato',sans-serif;color:#e8d5b7;
                                    font-size:1.6rem;margin:0 0 8px;">Course Complete!</h3>
                         <p style="color:#6b7b8c;font-size:14px;max-width:340px;margin:0 auto;">You've finished every section.
                             Feel free to ask any remaining questions below.</p>

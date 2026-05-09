@@ -2,7 +2,7 @@
 
 AiMentor is a local AI teacher for Windows, not a general-purpose assistant.
 
-The project is built around a simple constraint: when you ask an LLM to teach a topic in a long conversation, it often starts strong, then drifts, hallucinates, or loses the structure of the subject. AiMentor reduces that drift by forcing the model to create a syllabus first, then teach section by section along that path.
+The project is built around a simple constraint: when you ask an LLM to teach a topic in a long conversation, it often starts strong, then drifts, hallucinates, or loses the structure of the subject. AiMentor reduces that drift by forcing the model to create a syllabus first, then teach along that path.
 
 It also includes a separate Free Chat mode for open-ended conversation when structure is not the goal.
 
