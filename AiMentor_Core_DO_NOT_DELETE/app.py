@@ -108,6 +108,16 @@ a { color: var(--gold) !important; }
   fill: var(--cream-muted) !important;
 }
 
+/* Sidebar buttons — compact for history items */
+[data-testid="stSidebar"] [data-testid="stButton"] button {
+  font-size: 11.5px !important;
+  padding: 5px 10px !important;
+}
+[data-testid="stSidebar"] [data-testid="stButton"] button p,
+[data-testid="stSidebar"] [data-testid="stButton"] button span {
+  font-size: 11.5px !important;
+}
+
 /* ─── BUTTONS — global default (gold) ───────── */
 [data-testid="stButton"] button {
   background: linear-gradient(135deg, var(--gold) 0%, #a07c18 100%) !important;
@@ -121,6 +131,12 @@ a { color: var(--gold) !important; }
   letter-spacing: 0.02em !important;
   transition: all 0.22s cubic-bezier(0.4,0,0.2,1) !important;
   box-shadow: 0 2px 8px rgba(201,162,39,0.20) !important;
+}
+/* Force button text to inherit button color (overrides global p/span rules) */
+[data-testid="stButton"] button p,
+[data-testid="stButton"] button span,
+[data-testid="stButton"] button div {
+  color: inherit !important;
 }
 [data-testid="stButton"] button:hover {
   background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%) !important;
@@ -244,12 +260,12 @@ a { color: var(--gold) !important; }
 }
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] {
   font-family: 'Raleway', sans-serif !important;
-  font-size: 15px !important;
-  line-height: 1.72 !important;
+  font-size: 16.5px !important;
+  line-height: 1.9 !important;
   color: var(--cream) !important;
 }
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p {
-  margin: 0 0 0.55em 0 !important;
+  margin: 0 0 1.2em 0 !important;
   word-wrap: break-word !important;
   word-break: normal !important;
   overflow-wrap: break-word !important;
@@ -908,6 +924,17 @@ def clean_thinking(thinking):
     return cleaned.strip()
 
 
+def strip_em_dashes(text):
+    """Post-process model output to remove em dashes the model ignores instructions about."""
+    if not text:
+        return text
+    text = text.replace(" \u2014 ", ", ")
+    text = text.replace("\u2014", ", ")
+    text = text.replace(" -- ", ", ")
+    text = text.replace("--", ", ")
+    return text
+
+
 def parse_syllabus_structure(syllabus_text):
     structure = []
     current_section = None
@@ -1146,6 +1173,7 @@ def process_stream_ui(stream_generator):
             else:
                 response_area.markdown(full)
 
+    full_response = strip_em_dashes(full_response)
     thinking, clean_response = extract_thinking(full_response)
     if thinking is not None and not thinking_complete:
         escaped_thinking = html.escape(clean_thinking(thinking))
@@ -1166,6 +1194,7 @@ def process_stream_ui(stream_generator):
 
 
 def display_message(content):
+    content = strip_em_dashes(content)
     thinking, clean_response = extract_thinking(content)
     if thinking is not None:
         escaped_thinking = html.escape(clean_thinking(thinking))
