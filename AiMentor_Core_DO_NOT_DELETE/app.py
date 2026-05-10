@@ -261,7 +261,7 @@ a { color: var(--gold) !important; }
 }
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] {
   font-family: var(--content-font) !important;
-  font-size: 16px !important;
+  font-size: 16.5px !important;
   line-height: 1.72 !important;
   color: var(--cream) !important;
 }
@@ -1104,7 +1104,8 @@ def get_teaching_prompt(topic, section, model_size="8B"):
             f"2. ONE ANALOGY: A single precise analogy that makes the abstract tangible.\n"
             f"3. BUILD: Explain layer by layer, simple first, then deeper.\n"
             f"4. END at an open question, not a summary.\n\n"
-            f"Use **bold** for key terms. Never use em dashes.\n"
+            f"Use **bold** for key terms. Never use em dashes. "
+            f"Do not repeat the same transition phrase in one answer.\n"
         )
     return (
         f"Topic: {topic}\nSection: {section}\n\n"
@@ -1121,7 +1122,8 @@ def get_teaching_prompt(topic, section, model_size="8B"):
         f"THE UNRESOLVED EDGE: End at an open question. Point to what nobody knows yet, "
         f"or to the deeper question hiding beneath this one. Leave the subject open, never closed.\n\n"
         f"Use ### for sub-headers and **bold** for key terms. "
-        f"Never use em dashes. Never summarize at the end.\n"
+        f"Never use em dashes. Never summarize at the end. "
+        f"Do not repeat the same transition phrase in one answer.\n"
     )
 
 RESUME_PROMPT_TEMPLATE = """
@@ -1161,7 +1163,8 @@ short one. This is your natural rhythm.
 You ask the student direct questions mid-explanation. Not rhetorical.
 Real questions that make them reason before you continue.
 You use "think about what that actually means" as a full stop before
-a crucial point. Not often. When it counts.
+a crucial point. Use that exact phrase at most once per answer. Never
+repeat it after each paragraph, subtopic, or section.
 You name the humans behind ideas. Not just Newton's law: Newton,
 age 23, during a plague, working alone.
 Never use a technical term before making it tangible.
