@@ -939,6 +939,24 @@ def strip_em_dashes(text):
     return text
 
 
+def limit_stock_transitions(text):
+    """Keep model catchphrases from turning into repeated paragraph openers."""
+    if not text:
+        return text
+
+    pattern = re.compile(
+        r"(?i)(^|\n\n|\n)(think about what that actually means|think about it|think about this)\.?\s+"
+    )
+    return pattern.sub(lambda match: match.group(1), text)
+
+
+def clean_model_output(text):
+    """Normalize output during streaming and final display."""
+    text = strip_em_dashes(text)
+    text = limit_stock_transitions(text)
+    return text
+
+
 def parse_syllabus_structure(syllabus_text):
     structure = []
     current_section = None
@@ -1105,7 +1123,7 @@ def get_teaching_prompt(topic, section, model_size="8B"):
             f"3. BUILD: Explain layer by layer, simple first, then deeper.\n"
             f"4. END at an open question, not a summary.\n\n"
             f"Use **bold** for key terms. Never use em dashes. "
-            f"Do not repeat the same transition phrase in one answer.\n"
+            f"Do not use stock transition phrases. Each paragraph must move the idea forward.\n"
         )
     return (
         f"Topic: {topic}\nSection: {section}\n\n"
@@ -1123,7 +1141,7 @@ def get_teaching_prompt(topic, section, model_size="8B"):
         f"or to the deeper question hiding beneath this one. Leave the subject open, never closed.\n\n"
         f"Use ### for sub-headers and **bold** for key terms. "
         f"Never use em dashes. Never summarize at the end. "
-        f"Do not repeat the same transition phrase in one answer.\n"
+        f"Do not use stock transition phrases. Each paragraph must move the idea forward.\n"
     )
 
 RESUME_PROMPT_TEMPLATE = """
@@ -1162,9 +1180,9 @@ Short sentence. Then a longer one that develops the thought from the
 short one. This is your natural rhythm.
 You ask the student direct questions mid-explanation. Not rhetorical.
 Real questions that make them reason before you continue.
-You use "think about what that actually means" as a full stop before
-a crucial point. Use that exact phrase at most once per answer. Never
-repeat it after each paragraph, subtopic, or section.
+Use transitions that arise from the idea itself. Do not rely on reusable
+catchphrases to manufacture emphasis. If a point is important, show its
+consequence directly.
 You name the humans behind ideas. Not just Newton's law: Newton,
 age 23, during a plague, working alone.
 Never use a technical term before making it tangible.
@@ -1178,6 +1196,7 @@ WHAT YOU NEVER DO
 - Never summarise at the end: the explanation IS the summary
 - Never say "great question", "certainly", "of course", "absolutely"
 - Never open consecutive responses with the same word or phrase
+- Never repeat the same sentence frame across paragraphs
 - Never pad. If the idea is exhausted, stop
 
 YOUR SUBJECTS
@@ -1221,6 +1240,7 @@ def process_stream_ui(stream_generator):
 
         thinking, clean_response = extract_thinking(full)
         if thinking is not None:
+            clean_response = clean_model_output(clean_response)
             if not thinking_complete:
                 escaped_thinking = html.escape(clean_thinking(thinking))
                 thinking_area.markdown(
@@ -1241,9 +1261,9 @@ def process_stream_ui(stream_generator):
                 )
                 response_area.markdown("")
             else:
-                response_area.markdown(full)
+                response_area.markdown(clean_model_output(full))
 
-    full_response = strip_em_dashes(full_response)
+    full_response = clean_model_output(full_response)
     thinking, clean_response = extract_thinking(full_response)
     if thinking is not None and not thinking_complete:
         escaped_thinking = html.escape(clean_thinking(thinking))
@@ -1264,7 +1284,7 @@ def process_stream_ui(stream_generator):
 
 
 def display_message(content):
-    content = strip_em_dashes(content)
+    content = clean_model_output(content)
     thinking, clean_response = extract_thinking(content)
     if thinking is not None:
         escaped_thinking = html.escape(clean_thinking(thinking))
