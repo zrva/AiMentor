@@ -793,6 +793,19 @@ SERVER_PORT = 8080
 _env_base = os.environ.get("LLM_API_BASE", "")
 SERVER_URL = _env_base.rstrip("/") if _env_base else f"http://localhost:{SERVER_PORT}"
 GPU_TYPE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".gpu_type")
+MODEL_SIZE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".model_size")
+
+
+def get_model_size():
+    """Read which model size is installed (4B or 8B). Defaults to 8B."""
+    try:
+        if os.path.exists(MODEL_SIZE_FILE):
+            with open(MODEL_SIZE_FILE, "r", encoding="utf-8") as f:
+                return f.read().strip().upper() or "8B"
+    except Exception:
+        pass
+    return "8B"
+
 
 
 def get_runtime_profile():
@@ -953,43 +966,100 @@ EXPERTISE_LEVELS = {
     "Expert (Academic)": "The student is an expert. Go into extreme depth, use highly rigorous academic terminology, dense theoretical analysis, and spare no complexity.",
 }
 
-SYLLABUS_PROMPT = """
-Create a learning roadmap for {topic}.
+EXPERTISE_SYLLABUS_CONFIG = {
+    "Beginner (Foundations)": {
+        "section_count": "5 to 6",
+        "style": "Use simple, curiosity-sparking section titles. Keep it inviting and accessible.",
+    },
+    "Intermediate (In-depth)": {
+        "section_count": "6 to 8",
+        "style": "Use moderately academic section titles that hint at deeper mechanics.",
+    },
+    "Expert (Academic)": {
+        "section_count": "8 to 10",
+        "style": "Use rigorous, academic section titles with dense conceptual coverage.",
+    },
+}
 
-Provide ONLY the syllabus structure containing the core concepts to learn. Do NOT include any introductory hooks, surprising facts, or conversational filler. Start directly with the first section heading.
 
-Format the path with interesting topic-specific headings. You MUST use strict Markdown headers (`### Section Title`) for each main section, and bullet points (`- **Subtopic:**`) for the concepts under them. (Do NOT use generic titles like "Index" or "Table of Contents").
-Ensure the names of subtopics are short and concise (1-4 words max).
+def get_syllabus_prompt(topic, expertise_key, model_size="8B"):
+    """Return the system prompt for syllabus generation, tuned to model size and expertise."""
+    config = EXPERTISE_SYLLABUS_CONFIG.get(
+        expertise_key, EXPERTISE_SYLLABUS_CONFIG["Beginner (Foundations)"]
+    )
+    expertise_desc = EXPERTISE_LEVELS.get(expertise_key, "")
+    section_count = config["section_count"]
+    style = config["style"]
 
-Be mindful:
-- Curiosity-sparking titles that make them want to explore
-- Balance length: NOT too long they lose motivation, NOT too short they learn nothing
-- You will expand on each topic when teaching - this is strictly just the roadmap structure.
+    if model_size == "4B":
+        return (
+            f"Create a learning syllabus for: {topic}\n\n"
+            f"FORMAT: Use ### for each section header. List 2-3 subtopics with - under each.\n"
+            f"Generate {section_count} sections total. No introductions, start with ### directly.\n\n"
+            f"{style}\n{expertise_desc}\n\n"
+            f"Example:\n### First Topic\n- Subtopic one\n- Subtopic two\n\n"
+            f"### Second Topic\n- Subtopic one\n- Subtopic two\n\n"
+            f"Now generate the syllabus:"
+        )
 
-Expertise: {expertise}
-"""
+    return (
+        f"You are creating a structured learning syllabus for the topic: {topic}\n\n"
+        f"STRICT OUTPUT RULES (follow exactly):\n"
+        f"1. Generate exactly {section_count} sections\n"
+        f"2. Each section MUST be a separate ### Markdown header (e.g. ### Section Title)\n"
+        f"3. Under each ### header, list exactly 2-3 subtopics using bullet points (- Subtopic)\n"
+        f"4. Subtopic text must be concise: 1-5 words maximum\n"
+        f"5. Do NOT wrap everything under one umbrella heading. Each ### is an independent teaching unit\n"
+        f"6. Do NOT include any introduction, preamble, or explanation before the first ###\n"
+        f"7. Start your response with the first ### header immediately\n"
+        f"8. Never use em dashes\n"
+        f"9. Make section titles specific and curiosity-sparking, not generic\n\n"
+        f"{style}\n"
+        f"Student level: {expertise_desc}\n\n"
+        f"EXACT FORMAT (follow this structure):\n"
+        f"### [Specific Section Title]\n"
+        f"- [Concise subtopic]\n"
+        f"- [Concise subtopic]\n"
+        f"- [Concise subtopic]\n\n"
+        f"### [Specific Section Title]\n"
+        f"- [Concise subtopic]\n"
+        f"- [Concise subtopic]\n\n"
+        f"(continue for {section_count} sections total)"
+    )
 
 EDIT_SYLLABUS_PROMPT_TEMPLATE = """
-You created this learning index:
+You created this learning syllabus:
 
 {syllabus}
 
-Student wants changes: {changes}
+The student wants these changes: {changes}
 
-Update the index accordingly. Keep it as a roadmap - don't overexplain.
+Update the syllabus. Keep using ### headers for each section with - bullet subtopics.
+Do not add explanations. Output only the updated syllabus structure.
 """
 
-TEACHING_PROMPT_TEMPLATE = """
-Topic: {topic}
-Section: {section}
-
-Now expand and teach this section:
-- This is your chance to go deep - explain concepts fully
-- Use examples, stories, or analogies to make it click
-- Connect to real-world applications
-- Make the student go "oh wow!" - that's the goal
-- **CRITICAL:** Use rich Markdown formatting! Use `###` for headers, `**bold**` for emphasis, and bullet points to break up dense paragraphs.
-"""
+def get_teaching_prompt(topic, section, model_size="8B"):
+    """Return the teaching prompt tuned to model size."""
+    if model_size == "4B":
+        return (
+            f"Topic: {topic}\nSection: {section}\n\n"
+            f"Teach this section clearly:\n"
+            f"- Explain the core concepts\n"
+            f"- Use one good analogy or example\n"
+            f"- Keep it focused and concise\n"
+            f"- Use **bold** for key terms\n"
+            f"- Never use em dashes\n"
+        )
+    return (
+        f"Topic: {topic}\nSection: {section}\n\n"
+        f"Now expand and teach this section in depth:\n"
+        f"- Explain concepts fully with precision and clarity\n"
+        f"- Use vivid examples, stories, or analogies to make ideas click\n"
+        f"- Connect to real-world applications where relevant\n"
+        f"- Make the student genuinely understand, not just memorize\n"
+        f"- Use rich Markdown formatting: ### for sub-headers, **bold** for emphasis, bullet points for structure\n"
+        f"- Never use em dashes\n"
+    )
 
 RESUME_PROMPT_TEMPLATE = """
 Topic: {topic}
@@ -1005,14 +1075,14 @@ Go deep on the current section - expand on what you promised in the index.
 """
 
 PROFESSOR_PERSONALITY = """
-You are a singular intellect: deeply learned, fiercely curious, and constitutionally incapable of pretending that all opinions are equally valid. You hold expertise across every domain — physics, history, philosophy, mathematics, literature, engineering, economics, art — and you speak about each with the same grounded authority.
+You are a singular intellect: deeply learned, fiercely curious, and constitutionally incapable of pretending that all opinions are equally valid. You hold expertise across every domain, from physics, history, and philosophy to mathematics, literature, engineering, economics, and art. You speak about each with the same grounded authority.
 
-Your voice is precise, warm, and occasionally sharp. You illuminate difficult ideas through exact analogies and concrete examples, never through vague gestures at complexity. When something is genuinely wonderful, you say so — not with hollow enthusiasm, but with the specific detail that makes a reader feel they have seen it for the first time. When something is wrong or half-baked, you say that too, and explain exactly why.
+Your voice is precise, warm, and occasionally sharp. You illuminate difficult ideas through exact analogies and concrete examples, never through vague gestures at complexity. When something is genuinely wonderful, you say so. Not with hollow enthusiasm, but with the specific detail that makes a reader feel they have seen it for the first time. When something is wrong or half-baked, you say that too, and explain exactly why.
 
-You are not a summarizer. You do not catalogue facts. You have a point of view and you pursue it. Every response is shaped by an argument, a surprise, a reframing — something that earns the reader's next question.
+You are not a summarizer. You do not catalogue facts. You have a point of view and you pursue it. Every response is shaped by an argument, a surprise, a reframing, something that earns the reader's next question.
 
-══ STRICT FORMATTING LAWS ══
-1. NEVER use em dashes (— or --). Not once. Replace any intended em dash with a comma, a colon, or a new sentence.
+== STRICT FORMATTING LAWS ==
+1. NEVER use em dashes. Not once. Replace any intended em dash with a comma, a colon, or a new sentence.
 2. Do not open consecutive responses with the same word or phrase. Vary your entry points.
 3. Never pad. If the idea is exhausted, stop. Length is earned, not assumed.
 4. Do not number your points unless order genuinely matters. Prefer flowing prose.
@@ -1020,7 +1090,7 @@ You are not a summarizer. You do not catalogue facts. You have a point of view a
 6. Do not repeat a point already made, even in rephrased form.
 7. Use Markdown sparingly and only when it genuinely aids clarity (code, tables, step sequences). In conversational exchanges, plain prose is preferred.
 
-══ IDENTITY ══
+== IDENTITY ==
 Never name yourself or claim to be any real person. Your identity lives in how you think, not in a label.
 """
 
@@ -1338,6 +1408,7 @@ def main():
     else:
         active_model = st.session_state["_cached_model_name"]
     runtime_profile = get_runtime_profile()
+    model_size = get_model_size()
 
     if "phase" not in st.session_state:
         reset_to_home()
@@ -2103,9 +2174,9 @@ Forbidden in every response: em dashes (— or --), repetitive sentence openers,
             st.markdown(st.session_state.topic)
 
         with st.chat_message("assistant"):
-            sys_prompt = SYLLABUS_PROMPT.replace(
-                "{topic}", st.session_state.topic
-            ).replace("{expertise}", EXPERTISE_LEVELS[st.session_state.expertise_level])
+            sys_prompt = get_syllabus_prompt(
+                st.session_state.topic, st.session_state.expertise_level, model_size
+            )
             stream_gen = generate_response_stream(
                 st.session_state.messages,
                 sys_prompt,
@@ -2328,9 +2399,9 @@ Forbidden in every response: em dashes (— or --), repetitive sentence openers,
                         + f"Expertise Context: {EXPERTISE_LEVELS.get(st.session_state.expertise_level, '')}\n"
                         + extract_thinking(st.session_state.syllabus_raw)[1]
                         + "\n\n"
-                        + TEACHING_PROMPT_TEMPLATE.replace(
-                            "{topic}", st.session_state.topic
-                        ).replace("{section}", current_sect)
+                        + get_teaching_prompt(
+                            st.session_state.topic, current_sect, model_size
+                        )
                         + final_instructions
                     )
 
