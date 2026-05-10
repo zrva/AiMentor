@@ -40,6 +40,7 @@ CUSTOM_CSS = """
   --radius-lg:     16px;
   --shadow-card:   0 4px 24px rgba(0,0,0,0.45);
   --shadow-glow:   0 0 20px rgba(201,162,39,0.18);
+  --content-font:   ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
 /* ─── BASE ─────────────────────────────────── */
@@ -259,13 +260,16 @@ a { color: var(--gold) !important; }
   border-top: 1px solid rgba(31,54,85,0.45) !important;
 }
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] {
-  font-family: 'Raleway', sans-serif !important;
-  font-size: 16.5px !important;
-  line-height: 1.9 !important;
+  font-family: var(--content-font) !important;
+  font-size: 16px !important;
+  line-height: 1.72 !important;
   color: var(--cream) !important;
 }
+[data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] * {
+  font-family: var(--content-font) !important;
+}
 [data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] p {
-  margin: 0 0 1.2em 0 !important;
+  margin: 0 0 0.8em 0 !important;
   word-wrap: break-word !important;
   word-break: normal !important;
   overflow-wrap: break-word !important;
