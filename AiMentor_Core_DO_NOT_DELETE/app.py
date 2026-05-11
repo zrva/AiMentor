@@ -8,6 +8,7 @@ import glob
 import requests
 import json
 import html
+import uuid
 
 st.set_page_config(page_title="AiMentor", page_icon="📚", layout="wide")
 
@@ -809,6 +810,8 @@ WORKSPACE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "llm_worksp
 
 os.makedirs(WORKSPACE, exist_ok=True)
 
+GENERATION_LOCK_FILE = os.path.join(WORKSPACE, "generation.lock")
+GENERATION_LOCK_TTL = 180
 SERVER_PORT = 8080
 _env_base = os.environ.get("LLM_API_BASE", "")
 SERVER_URL = _env_base.rstrip("/") if _env_base else f"http://localhost:{SERVER_PORT}"
@@ -1325,12 +1328,52 @@ def display_message(content):
             st.markdown(content)
 
 
+def acquire_generation_lock():
+    """Prevent multiple browser sessions from sending simultaneous local model requests."""
+    lock_id = str(uuid.uuid4())
+    now = time.time()
+
+    try:
+        fd = os.open(GENERATION_LOCK_FILE, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump({"id": lock_id, "created_at": now}, f)
+        return lock_id
+    except FileExistsError:
+        try:
+            created_at = os.path.getmtime(GENERATION_LOCK_FILE)
+            if now - created_at > GENERATION_LOCK_TTL:
+                os.remove(GENERATION_LOCK_FILE)
+                return acquire_generation_lock()
+        except Exception:
+            pass
+        return None
+    except Exception:
+        return None
+
+
+def release_generation_lock(lock_id):
+    if not lock_id:
+        return
+    try:
+        with open(GENERATION_LOCK_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if data.get("id") == lock_id:
+            os.remove(GENERATION_LOCK_FILE)
+    except Exception:
+        pass
+
+
 def generate_response_stream(
     messages, system_prompt, max_tokens=512, temperature=0.7, top_p=0.95
 ):
     # Truncate to last 20 messages to prevent context window overflow
     recent_messages = messages[-20:] if len(messages) > 20 else messages
     msg_payload = [{"role": "system", "content": system_prompt}] + recent_messages
+
+    lock_id = acquire_generation_lock()
+    if not lock_id:
+        yield "", "AiMentor is already generating in another tab or window. Please wait for that response to finish, then try again."
+        return
 
     try:
         response = requests.post(
@@ -1369,6 +1412,8 @@ def generate_response_stream(
                         yield "[SSE_ERROR]", f"Backend parse error: {parse_e}"
     except Exception as e:
         yield "", f"Error: {str(e)}"
+    finally:
+        release_generation_lock(lock_id)
 
 
 def reset_to_home():
@@ -1438,10 +1483,12 @@ def save_freechat_checkpoint():
     first_msg = next((m["content"] for m in st.session_state.free_chat_msgs if m["role"] == "user"), "chat")
     safe_title = re.sub(r"[^\w\s-]", "", first_msg[:30]).strip().replace(" ", "_").lower()
     
-    timestamp = getattr(st.session_state, "_freechat_session_id", int(time.time()))
-    st.session_state._freechat_session_id = timestamp 
+    session_id = getattr(st.session_state, "_freechat_session_id", None)
+    if not session_id:
+        session_id = f"{int(time.time())}_{uuid.uuid4().hex[:8]}"
+        st.session_state._freechat_session_id = session_id
     
-    filepath = os.path.join(WORKSPACE, f"freechat_{timestamp}_{safe_title}.json")
+    filepath = os.path.join(WORKSPACE, f"freechat_{session_id}_{safe_title}.json")
     try:
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(st.session_state.free_chat_msgs, f, indent=2)
@@ -1456,8 +1503,9 @@ def restore_freechat_checkpoint(filename):
         reset_to_home()
         st.session_state.free_chat_msgs = msgs
         
-        parts = filename.replace("freechat_", "").split("_")
-        st.session_state._freechat_session_id = int(parts[0])
+        parts = filename.replace("freechat_", "").replace(".json", "").split("_")
+        has_uuid_suffix = len(parts) > 2 and re.fullmatch(r"[0-9a-f]{8}", parts[1] or "")
+        st.session_state._freechat_session_id = "_".join(parts[:2]) if has_uuid_suffix else parts[0]
     except Exception as e:
         st.error(f"Failed to restore chat: {e}")
 
@@ -1689,8 +1737,13 @@ def main():
             else:
                 for f in fc_files[:8]:
                     try:
-                        # freechat_TIMESTAMP_title.json
-                        _ts, _title = f.replace("freechat_", "").replace(".json", "").split("_", 1)
+                        # freechat_TIMESTAMP_SESSIONID_title.json
+                        parts = f.replace("freechat_", "").replace(".json", "").split("_")
+                        _ts = parts[0]
+                        has_uuid_suffix = len(parts) > 2 and re.fullmatch(r"[0-9a-f]{8}", parts[1] or "")
+                        _title = "_".join(parts[2:]) if has_uuid_suffix else "_".join(parts[1:])
+                        if not _title:
+                            _title = "chat"
                         date_str = time.strftime('%b %d', time.localtime(int(_ts)))
                         display_title = _title.replace("_", " ").title()
                         if len(display_title) > 18:
