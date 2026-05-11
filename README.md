@@ -6,6 +6,15 @@ The project is built around a simple constraint: when you ask an LLM to teach a 
 
 It also includes a separate Free Chat mode for open-ended conversation when structure is not the goal.
 
+## Preview
+
+AiMentor runs locally on your machine, so there is no hosted demo link. These recordings show the actual offline app experience after setup.
+
+| Structured Course | Free Chat |
+| --- | --- |
+| <img src="assets/teaching.gif" alt="AiMentor structured course demo showing syllabus generation and a teaching section" width="100%"> | <img src="assets/freechat.gif" alt="AiMentor free chat demo showing an open-ended conversation" width="100%"> |
+| Syllabus-first learning, review, and guided section teaching. | Open conversation mode for questions outside the structured course flow. |
+
 ## Why this exists
 
 Most AI chat tools are reactive. They answer the latest message well enough, but over time they can:
