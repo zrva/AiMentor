@@ -10,10 +10,9 @@ It also includes a separate Free Chat mode for open-ended conversation when stru
 
 AiMentor runs locally on your machine, so there is no hosted demo link. These recordings show the actual offline app experience after setup.
 
-| Structured Course | Free Chat |
-| --- | --- |
-| <img src="assets/teaching.gif" alt="AiMentor structured course demo showing syllabus generation and a teaching section" width="100%"> | <img src="assets/freechat.gif" alt="AiMentor free chat demo showing an open-ended conversation" width="100%"> |
-| Syllabus-first learning, review, and guided section teaching. | Open conversation mode for questions outside the structured course flow. |
+<img src="assets/teaching.gif" alt="AiMentor structured course demo showing syllabus generation and a teaching section">
+
+Syllabus-first learning, review, and guided section teaching. A Free Chat mode is also available for open-ended conversation — see the modes below.
 
 ## Why this exists
 
@@ -55,6 +54,8 @@ This keeps the session anchored to the original topic and gives the model a fixe
 
 ### 1. Structured Course
 
+<img src="assets/teaching.gif" alt="AiMentor structured course demo showing syllabus generation and a teaching section">
+
 This is the main product experience.
 
 For a given topic, AiMentor:
@@ -69,6 +70,8 @@ For a given topic, AiMentor:
 This mode is intended for actual learning, where sequence matters.
 
 ### 2. Free Chat
+
+<img src="assets/freechat.gif" alt="AiMentor free chat demo showing an open-ended conversation">
 
 Free Chat is intentionally separate from the teaching flow.
 
