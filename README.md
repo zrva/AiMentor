@@ -157,20 +157,23 @@ The current implementation includes:
 - saved Free Chat history
 - fully local runtime after installation
 
-## Positioning
-
-AiMentor should be described as:
-
-- an AI teacher
-- a syllabus-driven tutor
-- a structured learning interface for local LLMs
-
-It should not be described as:
-
-- a generic chatbot
-- a general assistant
-- an open-ended tutoring chat without structure
-
 ## License
 
 This repository is licensed under GPLv3.
+
+## Acknowledgements
+
+AiMentor uses the Prism AI Bonsai models and depends on Prism AI's `llama.cpp` fork for local execution.
+
+If you use 1-bit Bonsai 8B, please cite:
+
+```bibtex
+@techreport{bonsai8b,
+    title   = {1-bit Bonsai 8B: End-to-End 1-bit Language Model Deployment
+               Across Apple, GPU, and Mobile Runtimes},
+    author  = {Prism ML},
+    year    = {2026},
+    month   = {March},
+    url     = {https://prismml.com}
+}
+```
