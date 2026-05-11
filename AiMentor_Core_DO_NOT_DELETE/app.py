@@ -841,16 +841,32 @@ def get_runtime_profile():
         return {
             "gpu_type": gpu_type,
             "max_tokens": 1024,
-            "temperature": 0.8,
-            "top_p": 0.75,
+            "profiles": {
+                "syllabus": {"max_tokens": 1024, "temperature": 0.55, "top_p": 0.8},
+                "teaching": {"max_tokens": 1024, "temperature": 0.70, "top_p": 0.85},
+                "free_chat": {"max_tokens": 1024, "temperature": 0.58, "top_p": 0.85},
+            },
         }
 
     return {
         "gpu_type": gpu_type,
         "max_tokens": 6500,
-        "temperature": 0.95,
-        "top_p": 0.75,
+        "profiles": {
+            "syllabus": {"max_tokens": 2000, "temperature": 0.55, "top_p": 0.8},
+            "teaching": {"max_tokens": 6000, "temperature": 0.70, "top_p": 0.85},
+            "free_chat": {"max_tokens": 1600, "temperature": 0.58, "top_p": 0.85},
+        },
     }
+
+
+def get_generation_settings(runtime_profile, profile_name):
+    profiles = runtime_profile.get("profiles", {})
+    fallback = {
+        "max_tokens": runtime_profile.get("max_tokens", 1024),
+        "temperature": runtime_profile.get("temperature", 0.7),
+        "top_p": runtime_profile.get("top_p", 0.85),
+    }
+    return profiles.get(profile_name, fallback)
 
 
 @st.cache_data(ttl=10, show_spinner=False)
@@ -1581,10 +1597,9 @@ def main():
             label_visibility="collapsed",
         )
 
-        # Fixed reasoning boundaries tuned to the selected runtime profile
-        max_tokens = runtime_profile["max_tokens"]
-        temperature = runtime_profile["temperature"]
-        top_p = runtime_profile["top_p"]
+        syllabus_settings = get_generation_settings(runtime_profile, "syllabus")
+        teaching_settings = get_generation_settings(runtime_profile, "teaching")
+        free_chat_settings = get_generation_settings(runtime_profile, "free_chat")
 
         if runtime_profile["gpu_type"] == "cpu":
             st.markdown(
@@ -2152,9 +2167,9 @@ and leave the subject open at an UNRESOLVED EDGE.
                 gen = generate_response_stream(
                     st.session_state.free_chat_msgs,
                     sys_tmp,
-                    max_tokens,
-                    temperature,
-                    top_p,
+                    free_chat_settings["max_tokens"],
+                    free_chat_settings["temperature"],
+                    free_chat_settings["top_p"],
                 )
                 ans = process_stream_ui(gen)
                 st.session_state.free_chat_msgs.append(
@@ -2307,9 +2322,9 @@ and leave the subject open at an UNRESOLVED EDGE.
             stream_gen = generate_response_stream(
                 st.session_state.messages,
                 sys_prompt,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                top_p=top_p,
+                max_tokens=syllabus_settings["max_tokens"],
+                temperature=syllabus_settings["temperature"],
+                top_p=syllabus_settings["top_p"],
             )
             final_response = process_stream_ui(stream_gen)
 
@@ -2406,9 +2421,9 @@ and leave the subject open at an UNRESOLVED EDGE.
                 stream_gen = generate_response_stream(
                     st.session_state.messages,
                     system_prompt,
-                    max_tokens=max_tokens,
-                    temperature=temperature,
-                    top_p=top_p,
+                    max_tokens=syllabus_settings["max_tokens"],
+                    temperature=syllabus_settings["temperature"],
+                    top_p=syllabus_settings["top_p"],
                 )
                 final_response = process_stream_ui(stream_gen)
 
@@ -2535,9 +2550,9 @@ and leave the subject open at an UNRESOLVED EDGE.
                 stream_gen = generate_response_stream(
                     st.session_state.messages,
                     system_prompt,
-                    max_tokens=max_tokens,
-                    temperature=temperature,
-                    top_p=top_p,
+                    max_tokens=teaching_settings["max_tokens"],
+                    temperature=teaching_settings["temperature"],
+                    top_p=teaching_settings["top_p"],
                 )
                 final_response = process_stream_ui(stream_gen)
                 st.session_state.messages.append(
