@@ -131,7 +131,8 @@ BIN_DIR="$SCRIPT_DIR/bin/$GPU_TYPE"
 VERSION_FILE="$BIN_DIR/.llama_version"
 NEEDS_UPDATE=true
 
-if [ -x "$BIN_DIR/llama-server" ] && [ -f "$VERSION_FILE" ]; then
+FOUND_BIN=$(find "$BIN_DIR" -name "llama-server" -type f 2>/dev/null | head -n 1)
+if [ -n "$FOUND_BIN" ] && [ -x "$FOUND_BIN" ] && [ -f "$VERSION_FILE" ]; then
     if [ "$(cat "$VERSION_FILE" | xargs)" = "$RELEASE_TAG" ]; then
         NEEDS_UPDATE=false
     fi
