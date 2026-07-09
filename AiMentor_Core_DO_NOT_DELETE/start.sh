@@ -49,9 +49,9 @@ else
 fi
 
 # 4. Start llama-server if it is not already listening
-LLAMA_EXE="$SCRIPT_DIR/bin/$GPU_TYPE/llama-server"
-if [ ! -x "$LLAMA_EXE" ]; then
-    echo "Error: llama-server executable not found at $LLAMA_EXE. Please run ./download.sh first."
+LLAMA_EXE=$(find "$SCRIPT_DIR/bin/$GPU_TYPE" -name "llama-server" -type f 2>/dev/null | head -n 1)
+if [ -z "$LLAMA_EXE" ] || [ ! -x "$LLAMA_EXE" ]; then
+    echo "Error: llama-server executable not found in $SCRIPT_DIR/bin/$GPU_TYPE. Please run ./download.sh first."
     exit 1
 fi
 
