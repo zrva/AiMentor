@@ -9,8 +9,8 @@ $ErrorActionPreference = "Stop"
 
 # Model will be auto-selected based on GPU detection unless user overrides
 $UserModelOverride = $env:BONSAI_MODEL  # empty = auto-detect
-$ReleaseTag = "prism-b8796-e2d6742"
-$WinAssetTag = "prism-b1-e2d6742"
+$ReleaseTag = "prism-b9570-0ad1dab"
+$WinAssetTag = "prism-b1-0ad1dab"
 $BaseUrl = "https://github.com/PrismML-Eng/llama.cpp/releases/download/$ReleaseTag"
 $VenvDir = Join-Path $PSScriptRoot "venv"
 $VenvPy = Join-Path $VenvDir "Scripts\python.exe"
