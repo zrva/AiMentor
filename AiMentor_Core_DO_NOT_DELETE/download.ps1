@@ -162,9 +162,13 @@ if ($UserModelOverride) {
     Write-Host "[INFO] GPU mode -> downloading full Bonsai-8B model" -ForegroundColor Green
 }
 
-# Direct download URLs (no auth required)
+$ModelFiles = @{
+    "8B" = "Ternary-Bonsai-8B-PQ2_0.gguf"
+    "4B" = "Bonsai-4B.gguf"
+}
+
 $ModelUrls = @{
-    "8B" = "https://huggingface.co/prism-ml/Bonsai-8B-gguf/resolve/main/Bonsai-8B.gguf"
+    "8B" = "https://huggingface.co/prism-ml/Ternary-Bonsai-8B-gguf/resolve/main/Ternary-Bonsai-8B-PQ2_0.gguf"
     "4B" = "https://huggingface.co/prism-ml/Bonsai-4B-gguf/resolve/main/Bonsai-4B.gguf"
 }
 
@@ -232,13 +236,17 @@ Set-Content -Path (Join-Path $PSScriptRoot ".gpu_type") -Value $GpuType
 Write-Host "==> [5/6] Downloading Bonsai-$BonsaiModel model ..." -ForegroundColor Cyan
 
 $ModelDir = Join-Path $PSScriptRoot "models\gguf\$BonsaiModel"
-$ModelFile = "Bonsai-${BonsaiModel}.gguf"
+$ModelFile = $ModelFiles[$BonsaiModel]
 $ModelPath = Join-Path $ModelDir $ModelFile
 
 if (Test-Path $ModelPath) {
     Write-Host "[OK] Model already present: $ModelFile" -ForegroundColor Green
+    # Remove any other gguf files to avoid conflicts
+    Get-ChildItem -Path $ModelDir -Filter "*.gguf" | Where-Object { $_.Name -ne $ModelFile } | Remove-Item -Force
 } else {
     New-Item -ItemType Directory -Path $ModelDir -Force | Out-Null
+    # Remove any other gguf files to avoid conflicts
+    Get-ChildItem -Path $ModelDir -Filter "*.gguf" | Remove-Item -Force
     $ModelUrl = $ModelUrls[$BonsaiModel]
     Write-Host "    Downloading from HuggingFace ..." -ForegroundColor Yellow
     Write-Host "    URL: $ModelUrl" -ForegroundColor Cyan
