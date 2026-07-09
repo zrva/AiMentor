@@ -2693,8 +2693,16 @@ and leave the subject open at an UNRESOLVED EDGE.
             st.session_state.doubts_asked = 0
 
         if not is_waiting_for_model:
+            # Auto-sync current chat state to cache so it's always up to date
+            if "section_caches" not in st.session_state:
+                st.session_state.section_caches = {}
+            if "section_doubts" not in st.session_state:
+                st.session_state.section_doubts = {}
+            st.session_state.section_caches[current_sect_index] = st.session_state.messages.copy()
+            st.session_state.section_doubts[current_sect_index] = st.session_state.doubts_asked
+            save_progress_checkpoint()
+
             is_last_sect = current_sect_index >= len(sections) - 1
-            
             if not is_last_sect:
                 doubts_remaining = 3 - st.session_state.doubts_asked
                 st.markdown(
@@ -2772,7 +2780,6 @@ and leave the subject open at an UNRESOLVED EDGE.
             if is_last_sect:
                 if current_sect not in st.session_state.completed_sections:
                     st.session_state.completed_sections.append(current_sect)
-                save_progress_checkpoint()
                 st.markdown(
                     """
                     <div style="text-align:center;padding:2rem 1rem;
