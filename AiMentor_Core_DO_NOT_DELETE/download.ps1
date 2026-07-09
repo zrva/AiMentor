@@ -198,6 +198,7 @@ if (-not $NeedsUpdate) {
     Write-Host "[OK] Binaries ($ReleaseTag) already present in $BinDir" -ForegroundColor Green
 } else {
     Write-Host "    Updating/Downloading binaries to $ReleaseTag ..." -ForegroundColor Cyan
+    Stop-Process -Name "llama-server" -Force -ErrorAction SilentlyContinue
     if (Test-Path $BinDir) { Remove-Item -Path $BinDir -Recurse -Force -ErrorAction SilentlyContinue }
     New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
 
