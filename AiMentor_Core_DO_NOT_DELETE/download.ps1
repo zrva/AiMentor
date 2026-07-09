@@ -121,32 +121,27 @@ if (-not $Reconfigure) {
     Write-Host "[SKIP] Steps 1-2: Python & venv already set up." -ForegroundColor DarkGray
 }
 
-# ── 3. Ask user: GPU or CPU ──
-Write-Host "==> [3/6] Hardware Selection" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "  Do you have a dedicated GPU (NVIDIA or AMD) that you want to use?" -ForegroundColor Yellow
-Write-Host ""
-Write-Host "    [1] YES - I have an NVIDIA GPU (CUDA)" -ForegroundColor Green
-Write-Host "    [2] YES - I have an AMD GPU (ROCm/HIP)" -ForegroundColor Green
-Write-Host "    [3] NO  - CPU only (or unsure)" -ForegroundColor Yellow
-Write-Host ""
-$choice = Read-Host "Enter your choice (1/2/3)"
+# ── 3. GPU Detection (Unattended) ──
+Write-Host "==> [3/6] Hardware Detection ..." -ForegroundColor Cyan
 
 $GpuType = "cpu"
 $CudaTag = "12.4"
 
-switch ($choice) {
-    "1" {
-        $GpuType = "cuda"
-        Write-Host "[OK] NVIDIA GPU (CUDA) selected" -ForegroundColor Green
-    }
-    "2" {
+$HasNvidia = $false
+if (Get-Command nvidia-smi -ErrorAction SilentlyContinue) { $HasNvidia = $true }
+elseif (Test-Path "$env:ProgramFiles\NVIDIA Corporation\NVSMI\nvidia-smi.exe") { $HasNvidia = $true }
+elseif (Test-Path "$env:SystemRoot\System32\nvidia-smi.exe") { $HasNvidia = $true }
+
+if ($HasNvidia) {
+    Write-Host "[OK] NVIDIA GPU detected -> CUDA" -ForegroundColor Green
+    $GpuType = "cuda"
+} else {
+    $amd = Get-WmiObject Win32_VideoController -ErrorAction SilentlyContinue | Where-Object { $_.Name -match "AMD|Radeon" }
+    if ($amd) {
+        Write-Host "[OK] AMD GPU detected -> ROCm/HIP" -ForegroundColor Green
         $GpuType = "hip"
-        Write-Host "[OK] AMD GPU (HIP/ROCm) selected" -ForegroundColor Green
-    }
-    default {
-        $GpuType = "cpu"
-        Write-Host "[OK] CPU mode selected" -ForegroundColor Yellow
+    } else {
+        Write-Host "[OK] No supported dedicated GPU found -> CPU" -ForegroundColor Yellow
     }
 }
 
@@ -180,21 +175,6 @@ if (-not $ModelUrls.ContainsKey($BonsaiModel)) {
 # ── 4. Download llama-server binaries ──
 Write-Host "==> [4/6] Downloading llama-server binaries ..." -ForegroundColor Cyan
 
-function Download-Binary($Asset, $BinDir, $RequiredFile = "llama-server.exe") {
-    if (Test-Path (Join-Path $BinDir $RequiredFile)) {
-        Write-Host "[OK] Binaries already present in $BinDir" -ForegroundColor Green
-        return
-    }
-    $Url = "$BaseUrl/$Asset"
-    $TmpZip = [System.IO.Path]::GetTempFileName() + ".zip"
-    Write-Host "    Downloading $Asset ..." -ForegroundColor Cyan
-    Invoke-WebRequest -Uri $Url -OutFile $TmpZip -UseBasicParsing
-    New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
-    Expand-Archive -Path $TmpZip -DestinationPath $BinDir -Force
-    Remove-Item $TmpZip -Force
-    Write-Host "[OK] Binaries installed to $BinDir" -ForegroundColor Green
-}
-
 $WinArch = if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq [System.Runtime.InteropServices.Architecture]::Arm64) { "arm64" } else { "x64" }
 
 if ($WinArch -eq "arm64" -and $GpuType -ne "cpu") {
@@ -202,31 +182,49 @@ if ($WinArch -eq "arm64" -and $GpuType -ne "cpu") {
     $GpuType = "cpu"
 }
 
-if ($GpuType -eq "hip") {
-    $BinDir = Join-Path $PSScriptRoot "bin\hip"
-    Download-Binary "llama-bin-win-hip-radeon-x64.zip" $BinDir
-} elseif ($GpuType -eq "cuda") {
-    $BinDir = Join-Path $PSScriptRoot "bin\cuda"
-    Download-Binary "llama-${WinAssetTag}-bin-win-cuda-${CudaTag}-x64.zip" $BinDir
-    # Also download CUDA runtime DLLs
-    $DllAsset = "cudart-llama-bin-win-cuda-${CudaTag}-x64.zip"
-    $DllUrl = "$BaseUrl/$DllAsset"
-    $DllZip = [System.IO.Path]::GetTempFileName() + ".zip"
-    Write-Host "    Downloading CUDA runtime DLLs ..." -ForegroundColor Cyan
-    try {
-        Invoke-WebRequest -Uri $DllUrl -OutFile $DllZip -UseBasicParsing
-        Expand-Archive -Path $DllZip -DestinationPath $BinDir -Force
-        Remove-Item $DllZip -Force
-    } catch {
-        Write-Host "[WARN] Could not download CUDA DLLs. You may need CUDA toolkit installed." -ForegroundColor Yellow
+$BinDir = Join-Path $PSScriptRoot "bin\$GpuType"
+$VersionFile = Join-Path $BinDir ".llama_version"
+$NeedsUpdate = $true
+
+if (Test-Path (Join-Path $BinDir "llama-server.exe")) {
+    if (Test-Path $VersionFile) {
+        if ((Get-Content $VersionFile -Raw).Trim() -eq $ReleaseTag) {
+            $NeedsUpdate = $false
+        }
     }
-} elseif ($GpuType -eq "vulkan") {
-    $BinDir = Join-Path $PSScriptRoot "bin\vulkan"
-    Download-Binary "llama-bin-win-cpu-${WinArch}.zip" $BinDir "llama-server.exe"
-    Download-Binary "llama-bin-win-vulkan-x64.zip" $BinDir "ggml-vulkan.dll"
+}
+
+if (-not $NeedsUpdate) {
+    Write-Host "[OK] Binaries ($ReleaseTag) already present in $BinDir" -ForegroundColor Green
 } else {
-    $BinDir = Join-Path $PSScriptRoot "bin\cpu"
-    Download-Binary "llama-bin-win-cpu-${WinArch}.zip" $BinDir
+    Write-Host "    Updating/Downloading binaries to $ReleaseTag ..." -ForegroundColor Cyan
+    if (Test-Path $BinDir) { Remove-Item -Path $BinDir -Recurse -Force -ErrorAction SilentlyContinue }
+    New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
+
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+    function Extract-Fast($Url, $Dest) {
+        $TmpZip = [System.IO.Path]::GetTempFileName() + ".zip"
+        Write-Host "    Downloading $(Split-Path $Url -Leaf) ..." -ForegroundColor Cyan
+        Invoke-WebRequest -Uri $Url -OutFile $TmpZip -UseBasicParsing
+        [System.IO.Compression.ZipFile]::ExtractToDirectory($TmpZip, $Dest)
+        Remove-Item $TmpZip -Force
+    }
+
+    if ($GpuType -eq "hip") {
+        Extract-Fast "$BaseUrl/llama-bin-win-hip-radeon-x64.zip" $BinDir
+    } elseif ($GpuType -eq "cuda") {
+        Extract-Fast "$BaseUrl/llama-${WinAssetTag}-bin-win-cuda-${CudaTag}-x64.zip" $BinDir
+        try { Extract-Fast "$BaseUrl/cudart-llama-bin-win-cuda-${CudaTag}-x64.zip" $BinDir } catch {}
+    } elseif ($GpuType -eq "vulkan") {
+        Extract-Fast "$BaseUrl/llama-bin-win-cpu-${WinArch}.zip" $BinDir
+        Extract-Fast "$BaseUrl/llama-bin-win-vulkan-x64.zip" $BinDir
+    } else {
+        Extract-Fast "$BaseUrl/llama-bin-win-cpu-${WinArch}.zip" $BinDir
+    }
+    
+    Set-Content -Path $VersionFile -Value $ReleaseTag
+    Write-Host "[OK] Binaries extracted and installed to $BinDir" -ForegroundColor Green
 }
 
 # Save detected GPU type for help.ps1
