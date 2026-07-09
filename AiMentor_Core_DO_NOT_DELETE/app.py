@@ -1430,6 +1430,8 @@ def reset_to_home():
         "doubts_asked",
         "free_chat_msgs",
         "last_sse_error_time",
+        "section_caches",
+        "section_doubts",
     ]
     for key in app_keys:
         if key in st.session_state:
@@ -1438,6 +1440,8 @@ def reset_to_home():
     st.session_state.phase = "home"
     st.session_state.topic = ""
     st.session_state.syllabus_raw = ""
+    st.session_state.section_caches = {}
+    st.session_state.section_doubts = {}
     st.session_state.syllabus_parsed = []
     st.session_state.current_section = 0
     st.session_state.completed_sections = []
@@ -1473,6 +1477,17 @@ def save_progress_checkpoint():
             os.path.join(WORKSPACE, f"syllabus_{safe_name}.md"), "w", encoding="utf-8"
         ) as f:
             f.write(content)
+        
+        # Save chat caches
+        caches_data = {
+            "section_caches": st.session_state.get("section_caches", {}),
+            "section_doubts": st.session_state.get("section_doubts", {})
+        }
+        with open(
+            os.path.join(WORKSPACE, f"syllabus_{safe_name}_caches.json"), "w", encoding="utf-8"
+        ) as f:
+            json.dump(caches_data, f)
+            
     except Exception:
         st.toast("⚠️ Failed to save progress checkpoint.", icon="⚠️")
 
@@ -1555,18 +1570,34 @@ def restore_progress_checkpoint(filename):
         st.session_state.completed_sections = completed_sections
         st.session_state.expertise_level = expertise_level
         st.session_state.doubts_asked = 0
+        
+        # Load chat caches if they exist
+        safe_name = re.sub(r"[^\w\s-]", "", topic).strip().replace(" ", "_").lower()
+        cache_path = os.path.join(WORKSPACE, f"syllabus_{safe_name}_caches.json")
+        if os.path.exists(cache_path):
+            try:
+                with open(cache_path, "r", encoding="utf-8") as f:
+                    caches_data = json.load(f)
+                    st.session_state.section_caches = {int(k): v for k, v in caches_data.get("section_caches", {}).items()}
+                    st.session_state.section_doubts = {int(k): v for k, v in caches_data.get("section_doubts", {}).items()}
+            except Exception:
+                pass
 
         st.session_state.messages = []
         st.session_state.phase = "teaching"
 
         if current_section < len(st.session_state.syllabus_parsed):
-            next_sec = st.session_state.syllabus_parsed[current_section]
-            st.session_state.messages.append(
-                {
-                    "role": "user",
-                    "content": f"Welcome back! I am ready to resume. Please teach me the next topic: {next_sec}. Make no explicit note of my return, just seamlessly begin teaching.",
-                }
-            )
+            if current_section in st.session_state.get("section_caches", {}):
+                st.session_state.messages = st.session_state.section_caches[current_section].copy()
+                st.session_state.doubts_asked = st.session_state.section_doubts.get(current_section, 0)
+            else:
+                next_sec = st.session_state.syllabus_parsed[current_section]
+                st.session_state.messages.append(
+                    {
+                        "role": "user",
+                        "content": f"Welcome back! I am ready to resume. Please teach me the next topic: {next_sec}. Make no explicit note of my return, just seamlessly begin teaching.",
+                    }
+                )
         else:
             st.session_state.messages.append(
                 {
@@ -1706,20 +1737,62 @@ def main():
                     unsafe_allow_html=True,
                 )
 
-                items_html = ""
+                st.markdown("""
+                    <style>
+                    div[data-testid="stSidebar"] div.stButton > button {
+                        text-align: left;
+                        justify-content: flex-start;
+                        border: 1px solid rgba(255,255,255,0.05);
+                        background: rgba(255,255,255,0.02);
+                        color: #cdd9e5;
+                        padding: 8px 12px;
+                        border-radius: 8px;
+                        margin-bottom: 4px;
+                        transition: all 0.2s;
+                    }
+                    div[data-testid="stSidebar"] div.stButton > button:hover {
+                        background: rgba(255,255,255,0.06);
+                        border-color: rgba(255,255,255,0.1);
+                    }
+                    div[data-testid="stSidebar"] div.stButton > button:disabled {
+                        opacity: 0.5;
+                        color: #6b7b8c;
+                    }
+                    </style>
+                """, unsafe_allow_html=True)
+
                 for i, sect_dict in enumerate(structure):
                     is_completed = i < st.session_state.current_section
                     is_current   = i == st.session_state.current_section
                     cls = "completed" if is_completed else ("current" if is_current else "locked")
-                    icon = "✓" if is_completed else ("▶" if is_current else "")
-                    title_html = f"{icon} {sect_dict['title']}" if icon else sect_dict['title']
-                    items_html += (
-                        f"<div class='sb-section {cls}'>"
-                        f"  <div class='dot'></div>"
-                        f"  <span>{title_html}</span>"
-                        f"</div>"
-                    )
-                st.markdown(items_html, unsafe_allow_html=True)
+                    icon = "✓" if is_completed else ("▶" if is_current else "🔒")
+                    title_text = f"{icon}  {sect_dict['title']}"
+                    
+                    if st.button(title_text, key=f"nav_sect_{i}", use_container_width=True, disabled=(cls == "locked")):
+                        if not is_current:
+                            curr_idx = st.session_state.current_section
+                            if "section_caches" not in st.session_state:
+                                st.session_state.section_caches = {}
+                            if "section_doubts" not in st.session_state:
+                                st.session_state.section_doubts = {}
+                            
+                            st.session_state.section_caches[curr_idx] = st.session_state.get("messages", []).copy()
+                            st.session_state.section_doubts[curr_idx] = st.session_state.get("doubts_asked", 0)
+                            
+                            curr_sect_title = structure[curr_idx]["title"] if curr_idx < len(structure) else f"Section {curr_idx}"
+                            if curr_sect_title not in st.session_state.completed_sections:
+                                st.session_state.completed_sections.append(curr_sect_title)
+                                
+                            save_progress_checkpoint()
+                            
+                            st.session_state.current_section = i
+                            if i in st.session_state.section_caches:
+                                st.session_state.messages = st.session_state.section_caches[i].copy()
+                                st.session_state.doubts_asked = st.session_state.section_doubts.get(i, 0)
+                            else:
+                                st.session_state.doubts_asked = 0
+                                st.session_state.messages = [{"role": "user", "content": f"I want to go back and review the previous section: {sect_dict['title']}"}]
+                            st.rerun()
 
         elif app_mode == "💬 Free Chat":
             # Sidebar History section for Free Chat
@@ -2657,36 +2730,44 @@ and leave the subject open at an UNRESOLVED EDGE.
                 st.write("")
                 col1, col2 = st.columns(2)
                 
+                def save_current_to_cache():
+                    if "section_caches" not in st.session_state:
+                        st.session_state.section_caches = {}
+                    if "section_doubts" not in st.session_state:
+                        st.session_state.section_doubts = {}
+                    st.session_state.section_caches[current_sect_index] = st.session_state.messages.copy()
+                    st.session_state.section_doubts[current_sect_index] = st.session_state.doubts_asked
+
+                def jump_to_section(target_idx, section_title, forward=True):
+                    save_current_to_cache()
+                    if current_sect not in st.session_state.completed_sections:
+                        st.session_state.completed_sections.append(current_sect)
+                    save_progress_checkpoint() # Always saves progress & caches to JSON
+                    
+                    st.session_state.current_section = target_idx
+                    if target_idx in st.session_state.section_caches:
+                        st.session_state.messages = st.session_state.section_caches[target_idx].copy()
+                        st.session_state.doubts_asked = st.session_state.section_doubts.get(target_idx, 0)
+                    else:
+                        st.session_state.doubts_asked = 0
+                        if forward:
+                            prompt = f"Great! Now please teach me the next section: {section_title}"
+                        else:
+                            prompt = f"I want to go back and review the previous section: {section_title}"
+                        st.session_state.messages = [{"role": "user", "content": prompt}]
+                    st.rerun()
+
                 with col1:
                     if current_sect_index > 0:
                         prev_sect = sections[current_sect_index - 1]
                         if st.button(f"← Prev: {prev_sect[:20]}{'…' if len(prev_sect)>20 else ''}", use_container_width=True):
-                            st.session_state.current_section -= 1
-                            st.session_state.doubts_asked = 0
-                            st.session_state.messages = [
-                                {
-                                    "role": "user",
-                                    "content": f"I want to go back and review the previous section: {prev_sect}"
-                                }
-                            ]
-                            st.rerun()
+                            jump_to_section(current_sect_index - 1, prev_sect, forward=False)
                             
                 with col2:
                     if not is_last_sect:
                         next_sect = sections[current_sect_index + 1]
                         if st.button(f"Next: {next_sect[:20]}{'…' if len(next_sect)>20 else ''}  →", use_container_width=True):
-                            if current_sect not in st.session_state.completed_sections:
-                                st.session_state.completed_sections.append(current_sect)
-                            save_progress_checkpoint()
-                            st.session_state.current_section += 1
-                            st.session_state.doubts_asked = 0
-                            st.session_state.messages = [
-                                {
-                                    "role": "user",
-                                    "content": f"Great! Now please teach me the next section: {next_sect}",
-                                }
-                            ]
-                            st.rerun()
+                            jump_to_section(current_sect_index + 1, next_sect, forward=True)
 
             if is_last_sect:
                 if current_sect not in st.session_state.completed_sections:
