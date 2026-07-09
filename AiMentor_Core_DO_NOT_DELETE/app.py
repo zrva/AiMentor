@@ -2555,6 +2555,7 @@ and leave the subject open at an UNRESOLVED EDGE.
                     or latest_msg["content"].startswith("Please teach me about:")
                     or latest_msg["content"].startswith("Welcome back!")
                     or latest_msg["content"].startswith("I've returned!")
+                    or latest_msg["content"].startswith("I want to go back")
                 )
                 is_doubt = not is_initial_teaching
 
@@ -2619,10 +2620,9 @@ and leave the subject open at an UNRESOLVED EDGE.
             st.session_state.doubts_asked = 0
 
         if not is_waiting_for_model:
-            if current_sect_index < len(sections) - 1:
-                next_sect = sections[current_sect_index + 1]
-
-                # Doubt counter
+            is_last_sect = current_sect_index >= len(sections) - 1
+            
+            if not is_last_sect:
                 doubts_remaining = 3 - st.session_state.doubts_asked
                 st.markdown(
                     f"""
@@ -2634,31 +2634,12 @@ and leave the subject open at an UNRESOLVED EDGE.
                     unsafe_allow_html=True,
                 )
 
-                if st.button(
-                    f"Next Section: {next_sect[:40]}{'…' if len(next_sect)>40 else ''}  →",
-                    use_container_width=True,
-                ):
-                    if current_sect not in st.session_state.completed_sections:
-                        st.session_state.completed_sections.append(current_sect)
-                    save_progress_checkpoint()
-                    st.session_state.current_section += 1
-                    st.session_state.doubts_asked = 0
-                    st.session_state.messages = [
-                        {
-                            "role": "user",
-                            "content": f"Great! Now please teach me the next section: {next_sect}",
-                        }
-                    ]
-                    st.rerun()
-
                 if st.session_state.doubts_asked < 3:
                     if doubt := st.chat_input(
                         f"Ask a doubt about '{current_sect[:30]}' ({st.session_state.doubts_asked}/3 used)…"
                     ):
                         st.session_state.doubts_asked += 1
-                        st.session_state.messages.append(
-                            {"role": "user", "content": doubt}
-                        )
+                        st.session_state.messages.append({"role": "user", "content": doubt})
                         st.rerun()
                 else:
                     st.markdown(
@@ -2671,7 +2652,43 @@ and leave the subject open at an UNRESOLVED EDGE.
                         """,
                         unsafe_allow_html=True,
                     )
-            else:
+            
+            if len(sections) > 1:
+                st.write("")
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    if current_sect_index > 0:
+                        prev_sect = sections[current_sect_index - 1]
+                        if st.button(f"← Prev: {prev_sect[:20]}{'…' if len(prev_sect)>20 else ''}", use_container_width=True):
+                            st.session_state.current_section -= 1
+                            st.session_state.doubts_asked = 0
+                            st.session_state.messages = [
+                                {
+                                    "role": "user",
+                                    "content": f"I want to go back and review the previous section: {prev_sect}"
+                                }
+                            ]
+                            st.rerun()
+                            
+                with col2:
+                    if not is_last_sect:
+                        next_sect = sections[current_sect_index + 1]
+                        if st.button(f"Next: {next_sect[:20]}{'…' if len(next_sect)>20 else ''}  →", use_container_width=True):
+                            if current_sect not in st.session_state.completed_sections:
+                                st.session_state.completed_sections.append(current_sect)
+                            save_progress_checkpoint()
+                            st.session_state.current_section += 1
+                            st.session_state.doubts_asked = 0
+                            st.session_state.messages = [
+                                {
+                                    "role": "user",
+                                    "content": f"Great! Now please teach me the next section: {next_sect}",
+                                }
+                            ]
+                            st.rerun()
+
+            if is_last_sect:
                 if current_sect not in st.session_state.completed_sections:
                     st.session_state.completed_sections.append(current_sect)
                 save_progress_checkpoint()
