@@ -163,12 +163,12 @@ if ($UserModelOverride) {
 }
 
 $ModelFiles = @{
-    "8B" = "Ternary-Bonsai-8B-PQ2_0.gguf"
+    "8B" = "Ternary-Bonsai-8B-Q2_0.gguf"
     "4B" = "Bonsai-4B.gguf"
 }
 
 $ModelUrls = @{
-    "8B" = "https://huggingface.co/prism-ml/Ternary-Bonsai-8B-gguf/resolve/main/Ternary-Bonsai-8B-PQ2_0.gguf"
+    "8B" = "https://huggingface.co/prism-ml/Ternary-Bonsai-8B-gguf/resolve/main/Ternary-Bonsai-8B-Q2_0.gguf"
     "4B" = "https://huggingface.co/prism-ml/Bonsai-4B-gguf/resolve/main/Bonsai-4B.gguf"
 }
 
