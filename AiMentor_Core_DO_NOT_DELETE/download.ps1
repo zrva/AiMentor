@@ -205,9 +205,13 @@ if (-not $NeedsUpdate) {
 
     function Extract-Fast($Url, $Dest) {
         $TmpZip = [System.IO.Path]::GetTempFileName() + ".zip"
+        $TmpExt = Join-Path ([System.IO.Path]::GetTempPath()) ([guid]::NewGuid().ToString())
         Write-Host "    Downloading $(Split-Path $Url -Leaf) ..." -ForegroundColor Cyan
         Invoke-WebRequest -Uri $Url -OutFile $TmpZip -UseBasicParsing
-        [System.IO.Compression.ZipFile]::ExtractToDirectory($TmpZip, $Dest)
+        New-Item -ItemType Directory -Path $TmpExt -Force | Out-Null
+        [System.IO.Compression.ZipFile]::ExtractToDirectory($TmpZip, $TmpExt)
+        Copy-Item -Path "$TmpExt\*" -Destination $Dest -Recurse -Force
+        Remove-Item $TmpExt -Recurse -Force
         Remove-Item $TmpZip -Force
     }
 
